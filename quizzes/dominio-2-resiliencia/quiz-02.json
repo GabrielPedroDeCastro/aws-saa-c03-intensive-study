@@ -1,0 +1,191 @@
+{
+  "id": "QUIZ-D2-02",
+  "titulo": "Mini-quiz 02 — Domínio 2 — Projetar arquiteturas resilientes",
+  "tipo": "mini-quiz por domínio",
+  "versao_exame": "AWS Certified Solutions Architect – Associate (SAA-C03)",
+  "autoria": "Conteúdo original deste projeto; não reproduz questões reais nem dumps.",
+  "instrucoes": [
+    "Marque uma única alternativa (A, B, C ou D) por questão.",
+    "Faça a primeira tentativa sem consultar o gabarito.",
+    "Depois, leia a explicação de todas as alternativas e execute o exercício recomendado nos erros."
+  ],
+  "quantidade_questoes": 5,
+  "tempo_total_sugerido_minutos": 10,
+  "pontos_totais": 11,
+  "distribuicao_dominios": {
+    "D2": 5
+  },
+  "distribuicao_dificuldade": {
+    "difícil": 2,
+    "fácil": 1,
+    "média": 2
+  },
+  "distribuicao_gabarito": {
+    "A": 1,
+    "B": 1,
+    "C": 1,
+    "D": 2
+  },
+  "questoes": [
+    {
+      "id": "QUIZ-D2-02-Q01",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Estratégias de disaster recovery",
+      "dificuldade": "difícil",
+      "tempo_sugerido_segundos": 130,
+      "pontos": 3,
+      "enunciado": "A empresa de geoprocessamento mapa vivo deve manter a solução simples para a equipe de plantão. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Um sistema regional exige RTO de 15 minutos e RPO de poucos minutos. A empresa aceita manter capacidade reduzida ativa na região de recuperação, mas não quer pagar por uma cópia em escala total. Qual estratégia se encaixa melhor? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.",
+      "alternativas": {
+        "A": "Pilot light contendo somente dados, sem automação para subir a aplicação.",
+        "B": "Multi-site active-active em escala total obrigatoriamente.",
+        "C": "Backup and restore com backups semanais offline.",
+        "D": "Warm standby: manter uma versão funcional em escala reduzida na região secundária, replicar dados e escalar durante o failover."
+      },
+      "resposta_correta": "D",
+      "explicacao_tecnica": "Warm standby já executa todos os componentes essenciais, reduzindo o RTO em comparação a pilot light sem manter capacidade integral como active-active.\n\nTrade-off: Pilot light custa menos, mas precisa iniciar/implantar parte relevante da aplicação; multi-site active-active oferece RTO menor com maior custo e complexidade. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Há uma lojinha reserva já aberta com poucos caixas; numa emergência, ela chama reforços rapidamente.",
+      "feedback_acerto": "Acertou: Warm standby já executa todos os componentes essenciais, reduzindo o RTO em comparação a pilot light sem manter capacidade integral como active-active. Quando outra opção poderia valer: Pilot light custa menos, mas precisa iniciar/implantar parte relevante da aplicação; multi-site active-active oferece RTO menor com maior custo e complexidade. Mnemônica: associe “Estratégias de disaster recovery” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — A ausência de componentes e automação torna o RTO incerto e provavelmente maior.",
+        "B": "Incorreta — Atenderia ou superaria o RTO, mas viola a intenção de evitar custo de capacidade integral quando warm standby basta.",
+        "C": "Incorreta — Em geral não atende RPO de minutos nem RTO de 15 minutos.",
+        "D": "Correta — Warm standby já executa todos os componentes essenciais, reduzindo o RTO em comparação a pilot light sem manter capacidade integral como active-active."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html",
+      "referencia_lab": "../labs/README.md — Cenário de recuperação multi-região",
+      "exercicio_recomendado": "No lab Cenário de recuperação multi-região, monte uma prova de conceito de Estratégias de disaster recovery; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-02-Q02",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Replicação S3 entre regiões",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "A edtech farol recebe picos imprevisíveis sem poder degradar o SLA. A carga atende milhares de requisições por segundo em horários de pico. Objetos de um bucket precisam ser copiados automaticamente para outra região para recuperação. A empresa também quer preservar versões e impedir que uma exclusão acidental destrua imediatamente a cópia histórica. O que configurar? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Habilitar versionamento nos buckets, configurar S3 Cross-Region Replication e definir cuidadosamente replicação de delete markers e retenção/Object Lock quando exigido.",
+        "B": "Usar lifecycle expiration no bucket de origem como mecanismo de cópia.",
+        "C": "Montar o bucket como EBS e fazer snapshot da instância.",
+        "D": "Desativar versionamento para reduzir o número de cópias."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "CRR requer versionamento e replica novos objetos conforme as regras. A política de delete markers e mecanismos de retenção determinam o comportamento diante de exclusões.\n\nTrade-off: Replicação não é retroativa por padrão e não substitui toda estratégia de backup; S3 Batch Replication pode tratar objetos existentes. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Cada desenho ganha uma cópia em outra cidade e versões antigas ficam num fichário que uma borracha comum não apaga.",
+      "feedback_acerto": "Acertou: CRR requer versionamento e replica novos objetos conforme as regras. A política de delete markers e mecanismos de retenção determinam o comportamento diante de exclusões. Quando outra opção poderia valer: Replicação não é retroativa por padrão e não substitui toda estratégia de backup; S3 Batch Replication pode tratar objetos existentes. Mnemônica: associe “Replicação S3 entre regiões” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — CRR requer versionamento e replica novos objetos conforme as regras. A política de delete markers e mecanismos de retenção determinam o comportamento diante de exclusões.",
+        "B": "Incorreta — Lifecycle gerencia transição/expiração e não replica objetos para outra região.",
+        "C": "Incorreta — S3 não é montado como volume EBS, e snapshot de EC2 não protege objetos do bucket.",
+        "D": "Incorreta — CRR exige versionamento e desativá-lo prejudica recuperação de alterações/exclusões."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html",
+      "referencia_lab": "../labs/README.md — S3 versionado e recuperação",
+      "exercicio_recomendado": "No lab S3 versionado e recuperação, monte uma prova de conceito de Replicação S3 entre regiões; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-02-Q03",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Amazon EFS Regional",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "A cooperativa campo vivo está migrando uma carga crítica para a AWS. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Um conjunto de instâncias Linux em várias AZs precisa compartilhar arquivos POSIX. Os dados devem permanecer acessíveis quando uma instância ou uma AZ falhar, sem gerenciar servidores de arquivos. Qual armazenamento usar? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Hospedar um servidor NFS único em EC2 sem standby.",
+        "B": "Amazon EFS Regional montado pelos clientes nas diferentes AZs, com mount targets e security groups adequados.",
+        "C": "Usar um único volume EBS em uma AZ e anexá-lo simultaneamente a qualquer número de instâncias Linux.",
+        "D": "Usar instance store e copiar arquivos manualmente à noite."
+      },
+      "resposta_correta": "B",
+      "explicacao_tecnica": "EFS Regional fornece sistema de arquivos gerenciado, elástico e multi-AZ, adequado ao compartilhamento simultâneo entre instâncias Linux.\n\nTrade-off: EFS One Zone pode custar menos, mas não atende ao requisito de tolerância à perda de uma AZ. EBS é zonal e normalmente anexado a uma instância. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "É uma estante compartilhada com portas em vários bairros; se uma porta fecha, as outras ainda chegam aos livros.",
+      "feedback_acerto": "Acertou: EFS Regional fornece sistema de arquivos gerenciado, elástico e multi-AZ, adequado ao compartilhamento simultâneo entre instâncias Linux. Quando outra opção poderia valer: EFS One Zone pode custar menos, mas não atende ao requisito de tolerância à perda de uma AZ. EBS é zonal e normalmente anexado a uma instância. Mnemônica: associe “Amazon EFS Regional” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é B. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — O servidor seria ponto único de falha e exigiria administração.",
+        "B": "Correta — EFS Regional fornece sistema de arquivos gerenciado, elástico e multi-AZ, adequado ao compartilhamento simultâneo entre instâncias Linux.",
+        "C": "Incorreta — EBS é zonal e Multi-Attach possui tipos e cenários restritos; não vira um sistema de arquivos regional gerenciado.",
+        "D": "Incorreta — Instance store é efêmero e a cópia manual não dá consistência nem alta disponibilidade."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html",
+      "referencia_lab": "../labs/README.md — Armazenamento compartilhado multi-AZ",
+      "exercicio_recomendado": "No lab Armazenamento compartilhado multi-AZ, monte uma prova de conceito de Amazon EFS Regional; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-02-Q04",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Aurora Global Database",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "A companhia aérea ventos deve manter a solução simples para a equipe de plantão. A carga atende milhares de requisições por segundo em horários de pico. Uma aplicação de leitura global baseada em Aurora precisa latência local em regiões secundárias e recuperação regional com replicação rápida. Escritas permanecem centralizadas durante operação normal. Qual recurso escolher? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Exportar snapshots manualmente uma vez por mês.",
+        "B": "Colocar o endpoint regional atrás de CloudFront para armazenar respostas SQL em cache.",
+        "C": "Usar Aurora Global Database com cluster primário gravável e clusters secundários de leitura nas regiões necessárias.",
+        "D": "Usar apenas Multi-AZ no cluster primário e esperar endpoints de leitura em outras regiões."
+      },
+      "resposta_correta": "C",
+      "explicacao_tecnica": "Aurora Global Database usa replicação dedicada entre regiões, oferece leituras locais e permite promover uma região secundária em um evento de recuperação.\n\nTrade-off: A promoção e o roteamento da aplicação ainda precisam ser planejados. Multi-AZ protege dentro de uma região e não fornece, sozinho, leituras globais. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "O livro mestre é escrito numa cidade, enquanto cópias quase instantâneas chegam às bibliotecas do mundo.",
+      "feedback_acerto": "Acertou: Aurora Global Database usa replicação dedicada entre regiões, oferece leituras locais e permite promover uma região secundária em um evento de recuperação. Quando outra opção poderia valer: A promoção e o roteamento da aplicação ainda precisam ser planejados. Multi-AZ protege dentro de uma região e não fornece, sozinho, leituras globais. Mnemônica: associe “Aurora Global Database” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é C. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Snapshots mensais não oferecem replicação contínua nem RPO/RTO compatíveis.",
+        "B": "Incorreta — CloudFront não se conecta diretamente a um protocolo de banco e não cria réplicas do Aurora.",
+        "C": "Correta — Aurora Global Database usa replicação dedicada entre regiões, oferece leituras locais e permite promover uma região secundária em um evento de recuperação.",
+        "D": "Incorreta — Multi-AZ oferece resiliência regional, não clusters de leitura entre regiões."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html",
+      "referencia_lab": "../labs/README.md — RDS/Aurora, réplicas e failover",
+      "exercicio_recomendado": "No lab RDS/Aurora, réplicas e failover, monte uma prova de conceito de Aurora Global Database; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-02-Q05",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "DynamoDB Global Tables",
+      "dificuldade": "difícil",
+      "tempo_sugerido_segundos": 130,
+      "pontos": 3,
+      "enunciado": "A empresa de geoprocessamento mapa vivo recebe picos imprevisíveis sem poder degradar o SLA. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Usuários em duas regiões precisam ler e gravar em uma tabela DynamoDB com baixa latência local. A aplicação aceita consistência eventual entre regiões e deve continuar gravando se uma região falhar. Qual solução usar? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.",
+      "alternativas": {
+        "A": "Criar uma tabela comum em uma única região e usar Multi-AZ manualmente.",
+        "B": "Adicionar DAX em duas regiões sem replicar a tabela.",
+        "C": "Fazer backup diário e restaurar em cada falha regional.",
+        "D": "Criar uma DynamoDB global table no modo de consistência eventual multi-região (MREC) e tornar a aplicação tolerante à resolução last-writer-wins."
+      },
+      "resposta_correta": "D",
+      "explicacao_tecnica": "Global Tables em MREC fornecem replicação multi-active gerenciada, permitindo leitura e gravação locais nas regiões participantes.\n\nTrade-off: No modo MREC, conflitos concorrentes usam last-writer-wins e a aplicação deve entender essa semântica. O modo MRSC oferece consistência forte multi-região com outra semântica, topologia e disponibilidade regional; a escolha depende do requisito de consistência. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "São dois cadernos mágicos: dá para escrever em qualquer cidade e as novidades aparecem no outro.",
+      "feedback_acerto": "Acertou: Global Tables em MREC fornecem replicação multi-active gerenciada, permitindo leitura e gravação locais nas regiões participantes. Quando outra opção poderia valer: No modo MREC, conflitos concorrentes usam last-writer-wins e a aplicação deve entender essa semântica. O modo MRSC oferece consistência forte multi-região com outra semântica, topologia e disponibilidade regional; a escolha depende do requisito de consistência. Mnemônica: associe “DynamoDB Global Tables” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — DynamoDB já é multi-AZ na região, mas isso não fornece gravações locais em duas regiões.",
+        "B": "Incorreta — DAX é cache regional e não torna a tabela multi-region ou multi-active.",
+        "C": "Incorreta — Backup/restauração não atende baixa latência local nem continuidade de gravações com RTO curto.",
+        "D": "Correta — Global Tables em MREC fornecem replicação multi-active gerenciada, permitindo leitura e gravação locais nas regiões participantes."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/globaltables_HowItWorks.html",
+      "referencia_lab": "../labs/README.md — DynamoDB, DAX e desenho de chaves",
+      "exercicio_recomendado": "No lab DynamoDB, DAX e desenho de chaves, monte uma prova de conceito de DynamoDB Global Tables; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    }
+  ]
+}

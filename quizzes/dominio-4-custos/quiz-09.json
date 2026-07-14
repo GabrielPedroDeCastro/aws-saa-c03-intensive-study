@@ -1,0 +1,191 @@
+{
+  "id": "QUIZ-D4-09",
+  "titulo": "Mini-quiz 09 — Domínio 4 — Projetar arquiteturas otimizadas em custos",
+  "tipo": "mini-quiz por domínio",
+  "versao_exame": "AWS Certified Solutions Architect – Associate (SAA-C03)",
+  "autoria": "Conteúdo original deste projeto; não reproduz questões reais nem dumps.",
+  "instrucoes": [
+    "Marque uma única alternativa (A, B, C ou D) por questão.",
+    "Faça a primeira tentativa sem consultar o gabarito.",
+    "Depois, leia a explicação de todas as alternativas e execute o exercício recomendado nos erros."
+  ],
+  "quantidade_questoes": 5,
+  "tempo_total_sugerido_minutos": 10,
+  "pontos_totais": 9,
+  "distribuicao_dominios": {
+    "D4": 5
+  },
+  "distribuicao_dificuldade": {
+    "difícil": 1,
+    "fácil": 2,
+    "média": 2
+  },
+  "distribuicao_gabarito": {
+    "A": 2,
+    "B": 1,
+    "C": 1,
+    "D": 1
+  },
+  "questoes": [
+    {
+      "id": "QUIZ-D4-09-Q01",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 4 — Projetar arquiteturas otimizadas em custos",
+      "codigo_dominio": "D4",
+      "topico": "AWS Compute Optimizer",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "O banco digital pioneiro precisa atender a uma auditoria sem redesenhar toda a aplicação. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Centenas de instâncias EC2 têm baixa utilização, mas a equipe não sabe quais podem ser reduzidas sem risco de memória ou performance. Ela quer recomendações baseadas em métricas antes de mudar tamanhos. Qual serviço usar? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Ativar AWS Compute Optimizer, garantir métricas suficientes (incluindo memória com agente quando necessário) e testar as recomendações de rightsizing.",
+        "B": "Reduzir todas as instâncias para t3.micro sem medir.",
+        "C": "Comprar Reserved Instances para todos os tamanhos atuais antes do rightsizing.",
+        "D": "Usar AWS Budgets como ferramenta de benchmark de CPU e memória."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "Compute Optimizer analisa métricas e oferece recomendações de tipo/tamanho e risco; a validação em carga real evita reduzir capacidade cegamente.\n\nTrade-off: Cost Explorer Rightsizing também ajuda na visão de custo. Recomendações são insumo, não autorização automática: sazonalidade, licenças e limites de rede precisam ser considerados. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Um treinador observa cada atleta e sugere um tênis do tamanho certo, em vez de comprar o maior para todos.",
+      "feedback_acerto": "Acertou: Compute Optimizer analisa métricas e oferece recomendações de tipo/tamanho e risco; a validação em carga real evita reduzir capacidade cegamente. Quando outra opção poderia valer: Cost Explorer Rightsizing também ajuda na visão de custo. Recomendações são insumo, não autorização automática: sazonalidade, licenças e limites de rede precisam ser considerados. Mnemônica: associe “AWS Compute Optimizer” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — Compute Optimizer analisa métricas e oferece recomendações de tipo/tamanho e risco; a validação em carga real evita reduzir capacidade cegamente.",
+        "B": "Incorreta — Uma regra única ignora CPU, memória, rede, burst e requisitos diferentes.",
+        "C": "Incorreta — Isso pode comprometer gasto em capacidade superdimensionada.",
+        "D": "Incorreta — Budgets alerta sobre custo/uso, mas não faz análise técnica de dimensionamento."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html",
+      "referencia_lab": "../labs/README.md — Observabilidade e rightsizing",
+      "exercicio_recomendado": "No lab Observabilidade e rightsizing, monte uma prova de conceito de AWS Compute Optimizer; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D4-09-Q02",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 4 — Projetar arquiteturas otimizadas em custos",
+      "codigo_dominio": "D4",
+      "topico": "Capacidade do DynamoDB",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "A universidade saber precisa corrigir uma descoberta da revisão Well-Architected. A carga atende milhares de requisições por segundo em horários de pico. Uma tabela nova tem tráfego imprevisível e pode ficar horas ociosa antes de picos abruptos. A equipe não conhece a capacidade necessária e quer evitar administração inicial. Qual modo escolher? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Executar DynamoDB em uma EC2 Spot para pagar menos.",
+        "B": "Começar com DynamoDB on-demand e, quando o padrão se tornar previsível e sustentado, comparar com provisioned capacity e auto scaling.",
+        "C": "Provisionar imediatamente o pico teórico máximo 24x7 sem métricas.",
+        "D": "Escolher uma chave constante porque on-demand elimina hot partitions."
+      },
+      "resposta_correta": "B",
+      "explicacao_tecnica": "On-demand cobra por requisição e ajusta capacidade automaticamente, sendo adequado a cargas novas, variáveis ou intermitentes sem planejamento de throughput.\n\nTrade-off: Provisioned pode custar menos em uso estável e previsível, especialmente com auto scaling e reserved capacity elegível. Hot keys continuam sendo problema de modelagem. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Pagamos cada passeio quando alguém chega, sem manter um ônibus vazio esperando o dia inteiro.",
+      "feedback_acerto": "Acertou: On-demand cobra por requisição e ajusta capacidade automaticamente, sendo adequado a cargas novas, variáveis ou intermitentes sem planejamento de throughput. Quando outra opção poderia valer: Provisioned pode custar menos em uso estável e previsível, especialmente com auto scaling e reserved capacity elegível. Hot keys continuam sendo problema de modelagem. Mnemônica: associe “Capacidade do DynamoDB” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é B. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — DynamoDB é serviço gerenciado e não é implantado pelo cliente em EC2.",
+        "B": "Correta — On-demand cobra por requisição e ajusta capacidade automaticamente, sendo adequado a cargas novas, variáveis ou intermitentes sem planejamento de throughput.",
+        "C": "Incorreta — Isso tende a pagar capacidade ociosa durante a maior parte do tempo.",
+        "D": "Incorreta — Modo de capacidade não corrige uma chave de partição mal distribuída."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html",
+      "referencia_lab": "../labs/README.md — DynamoDB, DAX e capacidade",
+      "exercicio_recomendado": "No lab DynamoDB, DAX e capacidade, monte uma prova de conceito de Capacidade do DynamoDB; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D4-09-Q03",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 4 — Projetar arquiteturas otimizadas em custos",
+      "codigo_dominio": "D4",
+      "topico": "Snapshots EBS com Data Lifecycle Manager",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "A proptech janela está separando produção e desenvolvimento em contas distintas. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Volumes EBS precisam de snapshots diários, retenção por 35 dias e exclusão automática dos antigos. O processo atual usa scripts em uma instância que frequentemente falha. Qual opção reduz operação e custo? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Usar instance store como destino durável dos backups.",
+        "B": "Criar uma instância maior apenas para executar o cron de snapshots.",
+        "C": "Usar Amazon Data Lifecycle Manager com tags para criar e expirar snapshots segundo a política.",
+        "D": "Manter todos os snapshots para sempre porque snapshots incrementais não custam."
+      },
+      "resposta_correta": "C",
+      "explicacao_tecnica": "DLM automatiza ciclo de vida de snapshots EBS e AMIs com seleção por tags, eliminando servidor de agendamento e acúmulo indefinido.\n\nTrade-off: Snapshots são incrementais no armazenamento, mas cada snapshot aparece como ponto completo de restauração. A política precisa respeitar retenção e testes de restore. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Um robô fotografa os cadernos todo dia e descarta sozinho as fotos que passaram do prazo.",
+      "feedback_acerto": "Acertou: DLM automatiza ciclo de vida de snapshots EBS e AMIs com seleção por tags, eliminando servidor de agendamento e acúmulo indefinido. Quando outra opção poderia valer: Snapshots são incrementais no armazenamento, mas cada snapshot aparece como ponto completo de restauração. A política precisa respeitar retenção e testes de restore. Mnemônica: associe “Snapshots EBS com Data Lifecycle Manager” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é C. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Instance store é efêmero e não é serviço de backup.",
+        "B": "Incorreta — Isso aumenta custo e mantém uma automação desnecessariamente autogerenciada.",
+        "C": "Correta — DLM automatiza ciclo de vida de snapshots EBS e AMIs com seleção por tags, eliminando servidor de agendamento e acúmulo indefinido.",
+        "D": "Incorreta — Blocos exclusivos ainda ocupam armazenamento e retenção infinita gera custo."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/ebs/latest/userguide/snapshot-lifecycle.html",
+      "referencia_lab": "../labs/README.md — EBS, snapshots e recuperação",
+      "exercicio_recomendado": "No lab EBS, snapshots e recuperação, monte uma prova de conceito de Snapshots EBS com Data Lifecycle Manager; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D4-09-Q04",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 4 — Projetar arquiteturas otimizadas em custos",
+      "codigo_dominio": "D4",
+      "topico": "AWS Budgets e Cost Explorer",
+      "dificuldade": "difícil",
+      "tempo_sugerido_segundos": 130,
+      "pontos": 3,
+      "enunciado": "O marketplace beija-flor precisa atender a uma auditoria sem redesenhar toda a aplicação. A carga atende milhares de requisições por segundo em horários de pico. FinOps precisa alertar quando a previsão mensal ultrapassar o orçamento e depois investigar quais serviços e tags explicam a variação. Qual combinação usar? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.",
+      "alternativas": {
+        "A": "Usar CloudTrail sozinho para calcular a previsão da fatura.",
+        "B": "Usar security groups para impedir qualquer recurso de gerar custo.",
+        "C": "Esperar a fatura fechar e analisar apenas uma vez por ano.",
+        "D": "Configurar AWS Budgets com alertas de custo previsto/real e usar Cost Explorer para analisar tendências, filtros, grupos e relatórios."
+      },
+      "resposta_correta": "D",
+      "explicacao_tecnica": "Budgets compara gasto/uso com limites e envia alertas; Cost Explorer permite explorar a composição e a evolução dos custos.\n\nTrade-off: Cost Anomaly Detection complementa com alertas de padrões incomuns. Tags precisam ser ativadas como cost allocation tags e a organização deve manter governança de marcação. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "O alarme avisa que a mesada vai estourar, e a lupa mostra em quais brinquedos o dinheiro foi gasto.",
+      "feedback_acerto": "Acertou: Budgets compara gasto/uso com limites e envia alertas; Cost Explorer permite explorar a composição e a evolução dos custos. Quando outra opção poderia valer: Cost Anomaly Detection complementa com alertas de padrões incomuns. Tags precisam ser ativadas como cost allocation tags e a organização deve manter governança de marcação. Mnemônica: associe “AWS Budgets e Cost Explorer” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — CloudTrail registra APIs e não é ferramenta de previsão e análise financeira.",
+        "B": "Incorreta — Security groups controlam rede e não funcionam como orçamento ou governança financeira.",
+        "C": "Incorreta — Isso elimina alerta precoce e capacidade de correção durante o período.",
+        "D": "Correta — Budgets compara gasto/uso com limites e envia alertas; Cost Explorer permite explorar a composição e a evolução dos custos."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html",
+      "referencia_lab": "../labs/README.md — Budgets, tags e análise de custos",
+      "exercicio_recomendado": "No lab Budgets, tags e análise de custos, monte uma prova de conceito de AWS Budgets e Cost Explorer; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D4-09-Q05",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 4 — Projetar arquiteturas otimizadas em custos",
+      "codigo_dominio": "D4",
+      "topico": "S3 Intelligent-Tiering",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "O banco digital pioneiro precisa corrigir uma descoberta da revisão Well-Architected. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Milhões de objetos têm padrões de acesso desconhecidos e mudam ao longo do tempo. A aplicação exige acesso em milissegundos aos objetos ativos, e a equipe não quer criar regras por prefixo. Qual classe considerar? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Usar S3 Intelligent-Tiering, habilitando tiers de archive opcionais apenas se a latência de recuperação for aceitável.",
+        "B": "Usar EBS io2 para armazenar todos os objetos desconhecidos.",
+        "C": "Colocar tudo diretamente em Glacier Deep Archive e exigir leitura imediata.",
+        "D": "Duplicar cada objeto em todas as classes de armazenamento."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "Intelligent-Tiering monitora acesso e move objetos entre tiers automáticos sem cobrança de recuperação nos tiers de acesso frequente/infrequente, cobrando pequena taxa de monitoramento.\n\nTrade-off: Objetos menores que 128 KB não são monitorados nem movidos automaticamente e permanecem no tier Frequent Access. Archive Access/Deep Archive Access têm recuperação assíncrona e devem ser habilitados conscientemente. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Um bibliotecário observa quais livros são lidos e muda sozinho os pouco usados para estantes mais baratas.",
+      "feedback_acerto": "Acertou: Intelligent-Tiering monitora acesso e move objetos entre tiers automáticos sem cobrança de recuperação nos tiers de acesso frequente/infrequente, cobrando pequena taxa de monitoramento. Quando outra opção poderia valer: Objetos menores que 128 KB não são monitorados nem movidos automaticamente e permanecem no tier Frequent Access. Archive Access/Deep Archive Access têm recuperação assíncrona e devem ser habilitados conscientemente. Mnemônica: associe “S3 Intelligent-Tiering” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — Intelligent-Tiering monitora acesso e move objetos entre tiers automáticos sem cobrança de recuperação nos tiers de acesso frequente/infrequente, cobrando pequena taxa de monitoramento.",
+        "B": "Incorreta — EBS provisionado seria mais caro e não oferece a semântica/escala de armazenamento de objetos.",
+        "C": "Incorreta — Deep Archive não oferece recuperação em milissegundos.",
+        "D": "Incorreta — Isso multiplica custo e não automatiza seleção do tier apropriado."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html",
+      "referencia_lab": "../labs/README.md — S3, lifecycle e classes de armazenamento",
+      "exercicio_recomendado": "No lab S3, lifecycle e classes de armazenamento, monte uma prova de conceito de S3 Intelligent-Tiering; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    }
+  ]
+}

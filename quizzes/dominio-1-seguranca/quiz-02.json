@@ -1,0 +1,191 @@
+{
+  "id": "QUIZ-D1-02",
+  "titulo": "Mini-quiz 02 — Domínio 1 — Projetar arquiteturas seguras",
+  "tipo": "mini-quiz por domínio",
+  "versao_exame": "AWS Certified Solutions Architect – Associate (SAA-C03)",
+  "autoria": "Conteúdo original deste projeto; não reproduz questões reais nem dumps.",
+  "instrucoes": [
+    "Marque uma única alternativa (A, B, C ou D) por questão.",
+    "Faça a primeira tentativa sem consultar o gabarito.",
+    "Depois, leia a explicação de todas as alternativas e execute o exercício recomendado nos erros."
+  ],
+  "quantidade_questoes": 5,
+  "tempo_total_sugerido_minutos": 10,
+  "pontos_totais": 10,
+  "distribuicao_dominios": {
+    "D1": 5
+  },
+  "distribuicao_dificuldade": {
+    "difícil": 1,
+    "fácil": 1,
+    "média": 3
+  },
+  "distribuicao_gabarito": {
+    "A": 1,
+    "B": 1,
+    "C": 2,
+    "D": 1
+  },
+  "questoes": [
+    {
+      "id": "QUIZ-D1-02-Q01",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 1 — Projetar arquiteturas seguras",
+      "codigo_dominio": "D1",
+      "topico": "SCP em AWS Organizations",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "O banco digital pioneiro quer substituir um componente autogerenciado por um serviço gerenciado. A solução atual funciona, mas não atende ao novo requisito não funcional. A organização quer impedir que qualquer conta membro desative o CloudTrail ou crie recursos fora de regiões aprovadas, inclusive quando um administrador local concede Allow. Qual controle deve formar o guardrail? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Criar uma tag chamada RegiãoPermitida e confiar que os serviços a aplicarão sozinhos.",
+        "B": "Adicionar uma IAM policy Allow a todos os administradores das contas.",
+        "C": "Aplicar Service Control Policies nas OUs, com exceções cuidadosamente definidas para serviços e funções indispensáveis.",
+        "D": "Usar somente security groups para bloquear chamadas de API fora da região."
+      },
+      "resposta_correta": "C",
+      "explicacao_tecnica": "SCPs definem o teto de permissões de contas membros; um Allow local não consegue ultrapassar um Deny explícito aplicável da organização.\n\nTrade-off: SCP não concede permissões e não substitui policies de identidade ou recurso; ele limita o conjunto máximo que esses mecanismos podem conceder. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "É o muro do condomínio: cada morador escolhe as regras da casa, mas ninguém pode atravessar o muro externo.",
+      "feedback_acerto": "Acertou: SCPs definem o teto de permissões de contas membros; um Allow local não consegue ultrapassar um Deny explícito aplicável da organização. Quando outra opção poderia valer: SCP não concede permissões e não substitui policies de identidade ou recurso; ele limita o conjunto máximo que esses mecanismos podem conceder. Mnemônica: associe “SCP em AWS Organizations” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é C. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Tags só têm efeito de autorização quando policies explicitamente as avaliam.",
+        "B": "Incorreta — Um Allow amplia permissões locais e não cria o guardrail organizacional solicitado.",
+        "C": "Correta — SCPs definem o teto de permissões de contas membros; um Allow local não consegue ultrapassar um Deny explícito aplicável da organização.",
+        "D": "Incorreta — Security groups filtram tráfego de recursos e não governam permissões de APIs ou regiões."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html",
+      "referencia_lab": "../labs/README.md — IAM, KMS e guardrails",
+      "exercicio_recomendado": "No lab IAM, KMS e guardrails, monte uma prova de conceito de SCP em AWS Organizations; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D1-02-Q02",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 1 — Projetar arquiteturas seguras",
+      "codigo_dominio": "D1",
+      "topico": "Trilha de auditoria organizacional",
+      "dificuldade": "difícil",
+      "tempo_sugerido_segundos": 130,
+      "pontos": 3,
+      "enunciado": "A universidade saber vai lançar o serviço em três países. A aplicação é global e a latência percebida pelo usuário é uma métrica de negócio. Auditores exigem registro centralizado e resistente a adulteração das chamadas de API de todas as contas atuais e futuras. Também é preciso alertar quando alguém tentar apagar uma trilha. Qual arquitetura é adequada? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.",
+      "alternativas": {
+        "A": "Usar VPC Flow Logs como substituto para chamadas de API.",
+        "B": "Habilitar logs de acesso do ALB para registrar alterações no IAM.",
+        "C": "Confiar apenas no Event history de 90 dias de cada conta.",
+        "D": "Criar uma organization trail no CloudTrail para bucket central dedicado, habilitar validação de integridade, restringir o bucket e monitorar eventos com EventBridge/CloudWatch."
+      },
+      "resposta_correta": "D",
+      "explicacao_tecnica": "Uma organization trail cobre contas da organização de forma central; políticas do bucket e validação de logs protegem a evidência, e eventos permitem alertas rápidos.\n\nTrade-off: CloudTrail Lake pode ajudar em consultas e retenção, mas não elimina a necessidade de definir proteção, governança e alertas coerentes para os registros. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Todas as salas escrevem no mesmo diário lacrado; se alguém tentar arrancar uma página, um alarme toca.",
+      "feedback_acerto": "Acertou: Uma organization trail cobre contas da organização de forma central; políticas do bucket e validação de logs protegem a evidência, e eventos permitem alertas rápidos. Quando outra opção poderia valer: CloudTrail Lake pode ajudar em consultas e retenção, mas não elimina a necessidade de definir proteção, governança e alertas coerentes para os registros. Mnemônica: associe “Trilha de auditoria organizacional” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Flow Logs registram metadados de fluxos de rede, não ações de controle executadas via APIs.",
+        "B": "Incorreta — Logs do ALB mostram requisições ao balanceador, não alterações administrativas em serviços AWS.",
+        "C": "Incorreta — O histórico é limitado, regionalmente consultado e não fornece sozinho retenção central protegida.",
+        "D": "Correta — Uma organization trail cobre contas da organização de forma central; políticas do bucket e validação de logs protegem a evidência, e eventos permitem alertas rápidos."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html",
+      "referencia_lab": "../labs/README.md — Observabilidade, CloudTrail e alertas",
+      "exercicio_recomendado": "No lab Observabilidade, CloudTrail e alertas, monte uma prova de conceito de Trilha de auditoria organizacional; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D1-02-Q03",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 1 — Projetar arquiteturas seguras",
+      "codigo_dominio": "D1",
+      "topico": "Security groups e network ACLs",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "A proptech janela precisa tomar uma decisão com base em desempenho, segurança e custo total. A solução atual funciona, mas não atende ao novo requisito não funcional. Servidores web em subnets públicas aceitam HTTPS do mundo e acessam servidores de aplicação em subnets privadas. A equipe quer controles stateful por recurso e uma camada stateless de bloqueio explícito por CIDR na subnet. Qual combinação usar? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Security groups para permitir apenas os fluxos necessários entre tiers e network ACLs para regras stateless de allow/deny no limite das subnets.",
+        "B": "Usar apenas uma NACL, pois ela mantém estado das conexões automaticamente.",
+        "C": "Usar security group para negar explicitamente um CIDR malicioso.",
+        "D": "Associar uma NACL diretamente a cada instância EC2."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "Security groups são stateful e associados a interfaces; NACLs são stateless, ordenadas e associadas a subnets, podendo negar CIDRs explicitamente.\n\nTrade-off: Na maioria dos desenhos, security groups fazem o controle principal. NACLs são defesa adicional e exigem atenção às portas efêmeras nos dois sentidos. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "O crachá lembra quem entrou e deixa a resposta voltar; a cancela da rua verifica ida e volta e pode barrar uma placa.",
+      "feedback_acerto": "Acertou: Security groups são stateful e associados a interfaces; NACLs são stateless, ordenadas e associadas a subnets, podendo negar CIDRs explicitamente. Quando outra opção poderia valer: Na maioria dos desenhos, security groups fazem o controle principal. NACLs são defesa adicional e exigem atenção às portas efêmeras nos dois sentidos. Mnemônica: associe “Security groups e network ACLs” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — Security groups são stateful e associados a interfaces; NACLs são stateless, ordenadas e associadas a subnets, podendo negar CIDRs explicitamente.",
+        "B": "Incorreta — NACLs são stateless e exigem regras correspondentes de entrada e saída.",
+        "C": "Incorreta — Security groups têm regras de allow, não regras de deny explícito.",
+        "D": "Incorreta — NACLs são associadas a subnets; security groups são associados às interfaces de rede."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html",
+      "referencia_lab": "../labs/README.md — VPC multi-AZ com SG e NACL",
+      "exercicio_recomendado": "No lab VPC multi-AZ com SG e NACL, monte uma prova de conceito de Security groups e network ACLs; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D1-02-Q04",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 1 — Projetar arquiteturas seguras",
+      "codigo_dominio": "D1",
+      "topico": "Autenticação de clientes com Amazon Cognito",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "O marketplace beija-flor quer substituir um componente autogerenciado por um serviço gerenciado. A aplicação é global e a latência percebida pelo usuário é uma métrica de negócio. Um aplicativo móvel voltado a milhões de consumidores precisa cadastro, login, recuperação de senha, MFA opcional e tokens para chamar uma API. A equipe não quer manter um diretório próprio. Qual serviço é indicado? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Usar somente uma API key do API Gateway compartilhada por todos.",
+        "B": "Usar um Amazon Cognito User Pool como diretório e emissor de tokens, integrando-o ao API Gateway; usar Identity Pool apenas se forem necessárias credenciais AWS temporárias.",
+        "C": "Criar um usuário IAM para cada consumidor do aplicativo.",
+        "D": "Salvar senhas em uma tabela DynamoDB sem hash e validar na Lambda."
+      },
+      "resposta_correta": "B",
+      "explicacao_tecnica": "User Pools fornecem autenticação de usuários e tokens OIDC/OAuth; a API valida esses tokens sem a equipe operar o armazenamento de senhas.\n\nTrade-off: IAM Identity Center atende principalmente força de trabalho; Cognito é adequado a identidades de clientes. Identity Pools cumprem outro papel: trocar identidades por credenciais AWS temporárias. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "É uma portaria pronta que cadastra visitantes e entrega pulseiras válidas para entrar na festa.",
+      "feedback_acerto": "Acertou: User Pools fornecem autenticação de usuários e tokens OIDC/OAuth; a API valida esses tokens sem a equipe operar o armazenamento de senhas. Quando outra opção poderia valer: IAM Identity Center atende principalmente força de trabalho; Cognito é adequado a identidades de clientes. Identity Pools cumprem outro papel: trocar identidades por credenciais AWS temporárias. Mnemônica: associe “Autenticação de clientes com Amazon Cognito” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é B. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — API keys ajudam em medição e planos de uso; não autenticam individualmente usuários finais.",
+        "B": "Correta — User Pools fornecem autenticação de usuários e tokens OIDC/OAuth; a API valida esses tokens sem a equipe operar o armazenamento de senhas.",
+        "C": "Incorreta — IAM users não são um diretório de clientes em escala e gerariam riscos e operação excessivos.",
+        "D": "Incorreta — Armazenamento de senhas em texto é inseguro e recria capacidades já gerenciadas pelo Cognito."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools.html",
+      "referencia_lab": "../labs/README.md — API Gateway, Lambda e autenticação",
+      "exercicio_recomendado": "No lab API Gateway, Lambda e autenticação, monte uma prova de conceito de Autenticação de clientes com Amazon Cognito; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D1-02-Q05",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 1 — Projetar arquiteturas seguras",
+      "codigo_dominio": "D1",
+      "topico": "Proteção de camada 7 com AWS WAF",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "O banco digital pioneiro vai lançar o serviço em três países. A solução atual funciona, mas não atende ao novo requisito não funcional. Uma API pública atrás de um ALB sofre credential stuffing e rajadas de um pequeno conjunto de endereços IP. É necessário bloquear padrões HTTP e limitar requisições por origem sem alterar a aplicação. O que fazer? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Usar apenas AWS Shield Standard para identificar senhas reutilizadas.",
+        "B": "Aumentar o número de instâncias do Auto Scaling sem filtrar as requisições.",
+        "C": "Associar um Web ACL do AWS WAF ao ALB, usando managed rules e uma rate-based rule ajustada ao tráfego legítimo.",
+        "D": "Editar a NACL para bloquear palavras presentes no corpo HTTP."
+      },
+      "resposta_correta": "C",
+      "explicacao_tecnica": "WAF inspeciona atributos HTTP(S) e regras baseadas em taxa agregam requisições por chave, bloqueando ou desafiando origens abusivas na camada 7.\n\nTrade-off: Shield Standard está incluído e lida com ataques DDoS comuns de rede e transporte; Shield Advanced acrescenta resposta e proteção de custo, mas não substitui regras HTTP do WAF. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "O porteiro reconhece truques nas cartas e manda quem bate vezes demais esperar do lado de fora.",
+      "feedback_acerto": "Acertou: WAF inspeciona atributos HTTP(S) e regras baseadas em taxa agregam requisições por chave, bloqueando ou desafiando origens abusivas na camada 7. Quando outra opção poderia valer: Shield Standard está incluído e lida com ataques DDoS comuns de rede e transporte; Shield Advanced acrescenta resposta e proteção de custo, mas não substitui regras HTTP do WAF. Mnemônica: associe “Proteção de camada 7 com AWS WAF” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é C. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Shield não implementa lógica de credential stuffing baseada em campos e padrões HTTP.",
+        "B": "Incorreta — Escalar pode absorver carga, mas não bloqueia abuso e ainda amplia custo.",
+        "C": "Correta — WAF inspeciona atributos HTTP(S) e regras baseadas em taxa agregam requisições por chave, bloqueando ou desafiando origens abusivas na camada 7.",
+        "D": "Incorreta — NACLs operam em rede e não inspecionam conteúdo HTTP."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based.html",
+      "referencia_lab": "../labs/README.md — S3/CloudFront/WAF e proteção web",
+      "exercicio_recomendado": "No lab S3/CloudFront/WAF e proteção web, monte uma prova de conceito de Proteção de camada 7 com AWS WAF; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    }
+  ]
+}

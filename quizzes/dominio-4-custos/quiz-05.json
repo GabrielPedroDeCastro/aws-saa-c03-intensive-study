@@ -1,0 +1,191 @@
+{
+  "id": "QUIZ-D4-05",
+  "titulo": "Mini-quiz 05 — Domínio 4 — Projetar arquiteturas otimizadas em custos",
+  "tipo": "mini-quiz por domínio",
+  "versao_exame": "AWS Certified Solutions Architect – Associate (SAA-C03)",
+  "autoria": "Conteúdo original deste projeto; não reproduz questões reais nem dumps.",
+  "instrucoes": [
+    "Marque uma única alternativa (A, B, C ou D) por questão.",
+    "Faça a primeira tentativa sem consultar o gabarito.",
+    "Depois, leia a explicação de todas as alternativas e execute o exercício recomendado nos erros."
+  ],
+  "quantidade_questoes": 5,
+  "tempo_total_sugerido_minutos": 10,
+  "pontos_totais": 9,
+  "distribuicao_dominios": {
+    "D4": 5
+  },
+  "distribuicao_dificuldade": {
+    "difícil": 1,
+    "fácil": 2,
+    "média": 2
+  },
+  "distribuicao_gabarito": {
+    "A": 2,
+    "B": 1,
+    "C": 1,
+    "D": 1
+  },
+  "questoes": [
+    {
+      "id": "QUIZ-D4-05-Q01",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 4 — Projetar arquiteturas otimizadas em custos",
+      "codigo_dominio": "D4",
+      "topico": "S3 Intelligent-Tiering",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "O banco digital pioneiro está separando produção e desenvolvimento em contas distintas. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Milhões de objetos têm padrões de acesso desconhecidos e mudam ao longo do tempo. A aplicação exige acesso em milissegundos aos objetos ativos, e a equipe não quer criar regras por prefixo. Qual classe considerar? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Usar S3 Intelligent-Tiering, habilitando tiers de archive opcionais apenas se a latência de recuperação for aceitável.",
+        "B": "Usar EBS io2 para armazenar todos os objetos desconhecidos.",
+        "C": "Colocar tudo diretamente em Glacier Deep Archive e exigir leitura imediata.",
+        "D": "Duplicar cada objeto em todas as classes de armazenamento."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "Intelligent-Tiering monitora acesso e move objetos entre tiers automáticos sem cobrança de recuperação nos tiers de acesso frequente/infrequente, cobrando pequena taxa de monitoramento.\n\nTrade-off: Objetos menores que 128 KB não são monitorados nem movidos automaticamente e permanecem no tier Frequent Access. Archive Access/Deep Archive Access têm recuperação assíncrona e devem ser habilitados conscientemente. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Um bibliotecário observa quais livros são lidos e muda sozinho os pouco usados para estantes mais baratas.",
+      "feedback_acerto": "Acertou: Intelligent-Tiering monitora acesso e move objetos entre tiers automáticos sem cobrança de recuperação nos tiers de acesso frequente/infrequente, cobrando pequena taxa de monitoramento. Quando outra opção poderia valer: Objetos menores que 128 KB não são monitorados nem movidos automaticamente e permanecem no tier Frequent Access. Archive Access/Deep Archive Access têm recuperação assíncrona e devem ser habilitados conscientemente. Mnemônica: associe “S3 Intelligent-Tiering” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — Intelligent-Tiering monitora acesso e move objetos entre tiers automáticos sem cobrança de recuperação nos tiers de acesso frequente/infrequente, cobrando pequena taxa de monitoramento.",
+        "B": "Incorreta — EBS provisionado seria mais caro e não oferece a semântica/escala de armazenamento de objetos.",
+        "C": "Incorreta — Deep Archive não oferece recuperação em milissegundos.",
+        "D": "Incorreta — Isso multiplica custo e não automatiza seleção do tier apropriado."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html",
+      "referencia_lab": "../labs/README.md — S3, lifecycle e classes de armazenamento",
+      "exercicio_recomendado": "No lab S3, lifecycle e classes de armazenamento, monte uma prova de conceito de S3 Intelligent-Tiering; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D4-05-Q02",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 4 — Projetar arquiteturas otimizadas em custos",
+      "codigo_dominio": "D4",
+      "topico": "Arquitetura serverless para carga esporádica",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "A universidade saber precisa atender a uma auditoria sem redesenhar toda a aplicação. A carga atende milhares de requisições por segundo em horários de pico. Uma API recebe poucas chamadas na maior parte do dia e picos curtos imprevisíveis. Não mantém conexões longas nem estado local. A equipe quer pagar principalmente por uso e não administrar servidores. Qual arquitetura é adequada? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Usar Dedicated Hosts para cada requisição.",
+        "B": "API Gateway com Lambda e um armazenamento serverless apropriado, configurando limites, observabilidade e controle de concorrência.",
+        "C": "Executar a API em um NAT Gateway.",
+        "D": "Manter dez instâncias On-Demand grandes 24x7 para o pico raro."
+      },
+      "resposta_correta": "B",
+      "explicacao_tecnica": "Serviços serverless escalam sob demanda e cobram por requisição/execução, evitando instâncias ociosas para uma carga esporádica.\n\nTrade-off: Em carga alta e constante, contêineres/instâncias bem utilizados podem custar menos. Cold starts, limites de execução e dependências precisam ser avaliados. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "A barraca abre e chama ajudantes só quando chegam clientes, em vez de pagar uma equipe vazia o dia inteiro.",
+      "feedback_acerto": "Acertou: Serviços serverless escalam sob demanda e cobram por requisição/execução, evitando instâncias ociosas para uma carga esporádica. Quando outra opção poderia valer: Em carga alta e constante, contêineres/instâncias bem utilizados podem custar menos. Cold starts, limites de execução e dependências precisam ser avaliados. Mnemônica: associe “Arquitetura serverless para carga esporádica” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é B. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Hosts dedicados são inadequados à granularidade e aumentariam drasticamente o custo.",
+        "B": "Correta — Serviços serverless escalam sob demanda e cobram por requisição/execução, evitando instâncias ociosas para uma carga esporádica.",
+        "C": "Incorreta — NAT Gateway é serviço de tradução de endereços, não runtime de aplicação.",
+        "D": "Incorreta — A maior parte da capacidade ficaria ociosa e paga."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/lambda/latest/dg/concepts-application-design.html",
+      "referencia_lab": "../labs/README.md — Lambda, API Gateway e IAM roles",
+      "exercicio_recomendado": "No lab Lambda, API Gateway e IAM roles, monte uma prova de conceito de Arquitetura serverless para carga esporádica; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D4-05-Q03",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 4 — Projetar arquiteturas otimizadas em custos",
+      "codigo_dominio": "D4",
+      "topico": "Consolidated billing e compartilhamento de descontos",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "A proptech janela precisa corrigir uma descoberta da revisão Well-Architected. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Uma empresa possui muitas contas AWS e quer uma fatura consolidada, visão central de custos e melhor aproveitamento agregado de descontos elegíveis. Qual recurso usar? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Compartilhar a senha do usuário raiz entre todas as equipes.",
+        "B": "Criar VPC peering entre contas para combinar as faturas.",
+        "C": "Gerenciar as contas com AWS Organizations e consolidated billing, estruturando OUs, tags e controles de compartilhamento de descontos.",
+        "D": "Duplicar os mesmos compromissos em cada conta sem analisar uso agregado."
+      },
+      "resposta_correta": "C",
+      "explicacao_tecnica": "Organizations consolida cobrança e permite que uso agregado e compartilhamento elegível de descontos melhorem aproveitamento, além de centralizar relatórios.\n\nTrade-off: Consolidar não elimina a necessidade de chargeback/showback. Savings Plans/RI sharing pode ser configurado e políticas organizacionais não concedem permissões automaticamente. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "A família junta todas as compras numa conta só e aproveita melhor o cartão de desconto do supermercado.",
+      "feedback_acerto": "Acertou: Organizations consolida cobrança e permite que uso agregado e compartilhamento elegível de descontos melhorem aproveitamento, além de centralizar relatórios. Quando outra opção poderia valer: Consolidar não elimina a necessidade de chargeback/showback. Savings Plans/RI sharing pode ser configurado e políticas organizacionais não concedem permissões automaticamente. Mnemônica: associe “Consolidated billing e compartilhamento de descontos” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é C. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Isso é inseguro e não cria organização ou faturamento consolidado.",
+        "B": "Incorreta — Peering conecta redes e não consolida cobrança.",
+        "C": "Correta — Organizations consolida cobrança e permite que uso agregado e compartilhamento elegível de descontos melhorem aproveitamento, além de centralizar relatórios.",
+        "D": "Incorreta — Isso pode gerar excesso de compromisso e perde o benefício da visão consolidada."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html",
+      "referencia_lab": "../labs/README.md — FinOps multi-conta e alocação de custos",
+      "exercicio_recomendado": "No lab FinOps multi-conta e alocação de custos, monte uma prova de conceito de Consolidated billing e compartilhamento de descontos; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D4-05-Q04",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 4 — Projetar arquiteturas otimizadas em custos",
+      "codigo_dominio": "D4",
+      "topico": "EFS lifecycle e Infrequent Access",
+      "dificuldade": "difícil",
+      "tempo_sugerido_segundos": 130,
+      "pontos": 3,
+      "enunciado": "O marketplace beija-flor está separando produção e desenvolvimento em contas distintas. A carga atende milhares de requisições por segundo em horários de pico. Um sistema EFS Regional contém muitos arquivos antigos raramente lidos, mas eles ainda precisam aparecer no mesmo namespace POSIX. Como reduzir o custo sem migração manual? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.",
+      "alternativas": {
+        "A": "Criar um EFS novo para cada arquivo frio.",
+        "B": "Copiar manualmente arquivos para discos locais e apagar o EFS.",
+        "C": "Aumentar o throughput provisionado para reduzir armazenamento.",
+        "D": "Configurar EFS lifecycle management para mover arquivos não acessados a IA/Archive conforme elegibilidade e, se adequado, voltar ao Standard no primeiro acesso."
+      },
+      "resposta_correta": "D",
+      "explicacao_tecnica": "EFS lifecycle move dados frios para classes mais baratas mantendo o mesmo sistema de arquivos e acesso transparente à aplicação.\n\nTrade-off: Classes IA/Archive têm cobrança de acesso e são melhores para arquivos realmente frios. One Zone reduz custo adicional, mas muda a resiliência e não deve ser escolhido sem aceitar risco de AZ. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Os brinquedos esquecidos vão para uma prateleira barata, mas continuam no catálogo e voltam quando alguém pede.",
+      "feedback_acerto": "Acertou: EFS lifecycle move dados frios para classes mais baratas mantendo o mesmo sistema de arquivos e acesso transparente à aplicação. Quando outra opção poderia valer: Classes IA/Archive têm cobrança de acesso e são melhores para arquivos realmente frios. One Zone reduz custo adicional, mas muda a resiliência e não deve ser escolhido sem aceitar risco de AZ. Mnemônica: associe “EFS lifecycle e Infrequent Access” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Isso aumenta complexidade e não usa o lifecycle transparente disponível.",
+        "B": "Incorreta — Isso perde compartilhamento, durabilidade e automação do namespace existente.",
+        "C": "Incorreta — Throughput e classe de armazenamento são dimensões diferentes; aumentar throughput pode elevar custo.",
+        "D": "Correta — EFS lifecycle move dados frios para classes mais baratas mantendo o mesmo sistema de arquivos e acesso transparente à aplicação."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/efs/latest/ug/lifecycle-management-efs.html",
+      "referencia_lab": "../labs/README.md — EFS, classes e custo",
+      "exercicio_recomendado": "No lab EFS, classes e custo, monte uma prova de conceito de EFS lifecycle e Infrequent Access; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D4-05-Q05",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 4 — Projetar arquiteturas otimizadas em custos",
+      "codigo_dominio": "D4",
+      "topico": "S3 Lifecycle",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "O banco digital pioneiro precisa atender a uma auditoria sem redesenhar toda a aplicação. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Logs são acessados diariamente por 30 dias, raramente até o primeiro ano e precisam ser retidos por sete anos. A equipe quer reduzir custo automaticamente sem scripts. Qual abordagem usar? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Criar S3 Lifecycle para transicionar objetos às classes adequadas ao padrão de acesso e expirá-los somente após o prazo regulatório.",
+        "B": "Excluir os logs aos 30 dias apesar da retenção de sete anos.",
+        "C": "Copiar os objetos diariamente para mais buckets Standard na mesma região.",
+        "D": "Manter tudo em S3 Standard para sempre porque todas as classes têm o mesmo preço."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "Lifecycle automatiza transições e expiração por idade; a seleção deve considerar duração mínima, custo de recuperação e latência de cada classe.\n\nTrade-off: Glacier Flexible Retrieval/Deep Archive reduzem armazenamento, mas cobram recuperação e não servem a acesso imediato. Transições muito precoces podem gerar cobranças mínimas. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Caixas novas ficam na prateleira perto; depois vão ao depósito barato e, no prazo certo, são recicladas.",
+      "feedback_acerto": "Acertou: Lifecycle automatiza transições e expiração por idade; a seleção deve considerar duração mínima, custo de recuperação e latência de cada classe. Quando outra opção poderia valer: Glacier Flexible Retrieval/Deep Archive reduzem armazenamento, mas cobram recuperação e não servem a acesso imediato. Transições muito precoces podem gerar cobranças mínimas. Mnemônica: associe “S3 Lifecycle” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — Lifecycle automatiza transições e expiração por idade; a seleção deve considerar duração mínima, custo de recuperação e latência de cada classe.",
+        "B": "Incorreta — Isso viola o requisito regulatório.",
+        "C": "Incorreta — Cópias adicionais aumentam armazenamento sem implementar uma política de arquivamento econômica.",
+        "D": "Incorreta — As classes têm preços e características diferentes; o padrão conhecido permite economizar."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html",
+      "referencia_lab": "../labs/README.md — S3, lifecycle e otimização de custos",
+      "exercicio_recomendado": "No lab S3, lifecycle e otimização de custos, monte uma prova de conceito de S3 Lifecycle; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    }
+  ]
+}

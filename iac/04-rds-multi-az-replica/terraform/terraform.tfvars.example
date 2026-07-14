@@ -1,0 +1,4 @@
+aws_region         = "us-east-1"
+project_name       = "saa-lab-04"
+db_instance_class  = "db.t3.micro"
+create_read_replica = false

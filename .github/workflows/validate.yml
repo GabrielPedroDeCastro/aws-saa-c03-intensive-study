@@ -1,0 +1,83 @@
+name: validate-study-project
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.15.7"
+
+      - name: Install validators
+        run: python -m pip install --disable-pip-version-check cfn-lint==1.53.0
+
+      - name: Compile Python
+        run: |
+          python -m compileall -q tools
+          python tools/test_assessment_lib.py
+
+      - name: Rebuild landing page
+        run: |
+          python tools/build_site.py
+          git diff --exit-code -- GUIA-DE-ESTUDOS.md docs/index.html
+
+      - name: Rebuild assessments
+        run: |
+          python tools/generate_assessments.py
+          git diff --exit-code -- quizzes simulados flashcards
+
+      - name: Validate shell scripts
+        run: bash -n iac/scripts/*.sh
+
+      - name: Validate PowerShell scripts
+        shell: pwsh
+        run: |
+          $errors = @()
+          foreach ($file in Get-ChildItem iac/scripts -Filter *.ps1) {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$tokens, [ref]$parseErrors) | Out-Null
+            $errors += $parseErrors
+          }
+          if ($errors.Count -gt 0) { $errors | Format-List; exit 1 }
+
+      - name: Validate project contract
+        run: |
+          python tools/validate_assessments.py
+          python tools/validate_project.py
+
+      - name: Lint CloudFormation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' templates < <(find iac -path '*/cloudformation/*' \( -name '*.yaml' -o -name '*.yml' \) -print0)
+          test "${#templates[@]}" -gt 0
+          cfn-lint "${templates[@]}"
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive iac
+
+      - name: Validate every Terraform lab
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' directory; do
+            terraform -chdir="$directory" init -backend=false -input=false -lockfile=readonly
+            terraform -chdir="$directory" validate
+          done < <(find iac -type d -name terraform -print0 | sort -z)

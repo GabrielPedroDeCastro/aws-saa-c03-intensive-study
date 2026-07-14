@@ -1,0 +1,191 @@
+{
+  "id": "QUIZ-D3-05",
+  "titulo": "Mini-quiz 05 — Domínio 3 — Projetar arquiteturas de alto desempenho",
+  "tipo": "mini-quiz por domínio",
+  "versao_exame": "AWS Certified Solutions Architect – Associate (SAA-C03)",
+  "autoria": "Conteúdo original deste projeto; não reproduz questões reais nem dumps.",
+  "instrucoes": [
+    "Marque uma única alternativa (A, B, C ou D) por questão.",
+    "Faça a primeira tentativa sem consultar o gabarito.",
+    "Depois, leia a explicação de todas as alternativas e execute o exercício recomendado nos erros."
+  ],
+  "quantidade_questoes": 5,
+  "tempo_total_sugerido_minutos": 10,
+  "pontos_totais": 11,
+  "distribuicao_dominios": {
+    "D3": 5
+  },
+  "distribuicao_dificuldade": {
+    "difícil": 2,
+    "fácil": 1,
+    "média": 2
+  },
+  "distribuicao_gabarito": {
+    "A": 1,
+    "B": 1,
+    "C": 1,
+    "D": 2
+  },
+  "questoes": [
+    {
+      "id": "QUIZ-D3-05-Q01",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 3 — Projetar arquiteturas de alto desempenho",
+      "codigo_dominio": "D3",
+      "topico": "Amazon Kinesis Data Streams",
+      "dificuldade": "difícil",
+      "tempo_sugerido_segundos": 130,
+      "pontos": 3,
+      "enunciado": "A rede hospitalar horizonte está preparando a arquitetura para a próxima campanha anual. A solução atual funciona, mas não atende ao novo requisito não funcional. Sensores enviam eventos continuamente e vários consumidores precisam processar o mesmo stream com baixa latência, preservando ordem por dispositivo e possibilidade de replay dentro da retenção. Qual serviço escolher? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.",
+      "alternativas": {
+        "A": "Usar uma única fila SQS e esperar que todos os consumidores recebam cada evento e possam reler a sequência.",
+        "B": "Gravar eventos em arquivos locais e copiá-los semanalmente.",
+        "C": "Usar SNS sem assinantes duráveis nem retenção.",
+        "D": "Usar Kinesis Data Streams, com device ID como partition key, capacidade dimensionada/on-demand e consumidores apropriados."
+      },
+      "resposta_correta": "D",
+      "explicacao_tecnica": "Kinesis mantém registros ordenados por shard/partition key, permite múltiplos consumidores e replay durante o período de retenção.\n\nTrade-off: Uma partition key muito concentrada cria hot shard. SQS é excelente para filas de trabalho, mas normalmente cada mensagem é consumida como tarefa e não oferece o mesmo modelo de stream/replay. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Cada sensor põe bilhetes numa esteira própria; várias equipes podem reler a sequência enquanto ela ainda está guardada.",
+      "feedback_acerto": "Acertou: Kinesis mantém registros ordenados por shard/partition key, permite múltiplos consumidores e replay durante o período de retenção. Quando outra opção poderia valer: Uma partition key muito concentrada cria hot shard. SQS é excelente para filas de trabalho, mas normalmente cada mensagem é consumida como tarefa e não oferece o mesmo modelo de stream/replay. Mnemônica: associe “Amazon Kinesis Data Streams” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Uma fila distribui trabalho; fan-out e replay ordenado exigiriam outro desenho.",
+        "B": "Incorreta — Isso não atende baixa latência, durabilidade gerenciada ou múltiplos consumidores.",
+        "C": "Incorreta — SNS faz push, mas sozinho não fornece retenção e replay do stream.",
+        "D": "Correta — Kinesis mantém registros ordenados por shard/partition key, permite múltiplos consumidores e replay durante o período de retenção."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html",
+      "referencia_lab": "../labs/README.md — Streaming e processamento de eventos",
+      "exercicio_recomendado": "No lab Streaming e processamento de eventos, monte uma prova de conceito de Amazon Kinesis Data Streams; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D3-05-Q02",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 3 — Projetar arquiteturas de alto desempenho",
+      "codigo_dominio": "D3",
+      "topico": "Políticas de Auto Scaling",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "A empresa de logística rota certa opera com uma equipe pequena e quer reduzir tarefas manuais. A aplicação é global e a latência percebida pelo usuário é uma métrica de negócio. Uma API em EC2 apresenta carga proporcional a requisições por target. A equipe quer manter cerca de 1.000 requisições por target, adicionando e removendo capacidade automaticamente. Qual política é mais simples? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Usar target tracking no Auto Scaling com ALBRequestCountPerTarget definido para o valor desejado e warmup apropriado.",
+        "B": "Desabilitar health checks para evitar substituições durante picos.",
+        "C": "Usar somente scheduled scaling para uma carga totalmente imprevisível.",
+        "D": "Criar uma instância por usuário autenticado."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "Target tracking ajusta capacidade para manter a métrica perto do alvo e gerencia os alarmes subjacentes, reduzindo lógica manual.\n\nTrade-off: Step scaling é útil quando a resposta precisa variar por faixas; scheduled/predictive scaling ajuda cargas previsíveis. Cooldown e warmup evitam oscilações. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "O gerente abre caixas até cada caixa ter mais ou menos a fila combinada e fecha os extras quando o movimento cai.",
+      "feedback_acerto": "Acertou: Target tracking ajusta capacidade para manter a métrica perto do alvo e gerencia os alarmes subjacentes, reduzindo lógica manual. Quando outra opção poderia valer: Step scaling é útil quando a resposta precisa variar por faixas; scheduled/predictive scaling ajuda cargas previsíveis. Cooldown e warmup evitam oscilações. Mnemônica: associe “Políticas de Auto Scaling” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — Target tracking ajusta capacidade para manter a métrica perto do alvo e gerencia os alarmes subjacentes, reduzindo lógica manual.",
+        "B": "Incorreta — Isso mantém instâncias defeituosas e prejudica disponibilidade e desempenho.",
+        "C": "Incorreta — Agendamento depende de horários conhecidos e não reage bem a rajadas imprevisíveis.",
+        "D": "Incorreta — A relação não é operacionalmente adequada e ignora utilização agregada e limites."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html",
+      "referencia_lab": "../labs/README.md — ALB, Auto Scaling e health checks",
+      "exercicio_recomendado": "No lab ALB, Auto Scaling e health checks, monte uma prova de conceito de Políticas de Auto Scaling; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D3-05-Q03",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 3 — Projetar arquiteturas de alto desempenho",
+      "codigo_dominio": "D3",
+      "topico": "Lambda provisioned concurrency",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "A empresa de jogos capivara está eliminando um ponto único de falha identificado em teste. A solução atual funciona, mas não atende ao novo requisito não funcional. Uma função Lambda síncrona atende uma API sensível à latência. Após períodos ociosos, cold starts ultrapassam o SLA; o volume do horário comercial é previsível. Qual recurso reduz essa variação? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Usar reserved concurrency como sinônimo de ambientes sempre aquecidos.",
+        "B": "Configurar provisioned concurrency no alias/versão e, se adequado, escalá-la por agenda ou Application Auto Scaling.",
+        "C": "Colocar respostas da função em um volume instance store.",
+        "D": "Aumentar o timeout e assumir que isso inicializa a função antes da chamada."
+      },
+      "resposta_correta": "B",
+      "explicacao_tecnica": "Provisioned concurrency mantém ambientes inicializados e prontos, reduzindo cold starts para invocações atendidas pela capacidade provisionada.\n\nTrade-off: Provisioned concurrency gera custo enquanto alocada; para cargas tolerantes a cold start, memória maior, código otimizado ou SnapStart em runtimes compatíveis podem ser melhores. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Os cozinheiros ficam de avental e panela quente antes do primeiro pedido, em vez de abrir a cozinha do zero.",
+      "feedback_acerto": "Acertou: Provisioned concurrency mantém ambientes inicializados e prontos, reduzindo cold starts para invocações atendidas pela capacidade provisionada. Quando outra opção poderia valer: Provisioned concurrency gera custo enquanto alocada; para cargas tolerantes a cold start, memória maior, código otimizado ou SnapStart em runtimes compatíveis podem ser melhores. Mnemônica: associe “Lambda provisioned concurrency” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é B. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Reserved concurrency protege/limita capacidade, mas não inicializa ambientes como provisioned concurrency.",
+        "B": "Correta — Provisioned concurrency mantém ambientes inicializados e prontos, reduzindo cold starts para invocações atendidas pela capacidade provisionada.",
+        "C": "Incorreta — Lambda não fornece instance store persistente dessa forma e isso não elimina inicialização.",
+        "D": "Incorreta — Timeout limita duração após invocação; não pré-inicializa ambientes."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html",
+      "referencia_lab": "../labs/README.md — Lambda, API Gateway e desempenho",
+      "exercicio_recomendado": "No lab Lambda, API Gateway e desempenho, monte uma prova de conceito de Lambda provisioned concurrency; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D3-05-Q04",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 3 — Projetar arquiteturas de alto desempenho",
+      "codigo_dominio": "D3",
+      "topico": "Athena, partições e formato colunar",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "A plataforma de ingressos palco está preparando a arquitetura para a próxima campanha anual. A aplicação é global e a latência percebida pelo usuário é uma métrica de negócio. Consultas Athena leem logs no S3 particionados apenas em arquivos JSON grandes e escaneiam terabytes para filtrar um único dia e região. Como reduzir tempo e bytes processados? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Renomear JSON para .parquet sem transformar o conteúdo.",
+        "B": "Usar SELECT * em todas as consultas para aumentar o cache.",
+        "C": "Converter dados para Parquet/ORC comprimido, particionar por campos usados em filtros e garantir partition pruning/projection nas consultas.",
+        "D": "Mover logs para S3 Glacier Deep Archive e consultá-los diretamente a cada minuto."
+      },
+      "resposta_correta": "C",
+      "explicacao_tecnica": "Formatos colunares leem apenas colunas necessárias; partições permitem ignorar diretórios inteiros, reduzindo I/O, latência e custo por dados examinados.\n\nTrade-off: Partições demais e arquivos minúsculos também prejudicam desempenho. Compactação e tamanho de arquivo devem ser equilibrados com paralelismo. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Em vez de ler todos os cadernos, organizamos gavetas por dia e guardamos cada assunto em colunas fáceis de pegar.",
+      "feedback_acerto": "Acertou: Formatos colunares leem apenas colunas necessárias; partições permitem ignorar diretórios inteiros, reduzindo I/O, latência e custo por dados examinados. Quando outra opção poderia valer: Partições demais e arquivos minúsculos também prejudicam desempenho. Compactação e tamanho de arquivo devem ser equilibrados com paralelismo. Mnemônica: associe “Athena, partições e formato colunar” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é C. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — A extensão não muda o formato físico nem habilita leitura colunar.",
+        "B": "Incorreta — Ler todas as colunas aumenta dados examinados e normalmente piora custo e latência.",
+        "C": "Correta — Formatos colunares leem apenas colunas necessárias; partições permitem ignorar diretórios inteiros, reduzindo I/O, latência e custo por dados examinados.",
+        "D": "Incorreta — Objetos arquivados exigem restauração e não são adequados a consultas interativas contínuas."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/athena/latest/ug/performance-tuning-data-optimization-techniques.html",
+      "referencia_lab": "../labs/README.md — Data lake no S3 e consultas Athena",
+      "exercicio_recomendado": "No lab Data lake no S3 e consultas Athena, monte uma prova de conceito de Athena, partições e formato colunar; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D3-05-Q05",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 3 — Projetar arquiteturas de alto desempenho",
+      "codigo_dominio": "D3",
+      "topico": "Cache global com CloudFront",
+      "dificuldade": "difícil",
+      "tempo_sugerido_segundos": 130,
+      "pontos": 3,
+      "enunciado": "A rede hospitalar horizonte opera com uma equipe pequena e quer reduzir tarefas manuais. A solução atual funciona, mas não atende ao novo requisito não funcional. Um portal entrega imagens e arquivos estáticos do S3 a usuários globais. A origem recebe leituras repetidas e usuários distantes observam alta latência. Qual mudança melhora desempenho com menor operação? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.",
+      "alternativas": {
+        "A": "Usar Route 53 weighted routing para armazenar objetos em cache.",
+        "B": "Aumentar o tamanho do bucket S3.",
+        "C": "Copiar manualmente todos os objetos para volumes EBS em cada região.",
+        "D": "Distribuir o conteúdo com CloudFront, definir cache policies/TTLs adequados, compressão e OAC para a origem S3 privada."
+      },
+      "resposta_correta": "D",
+      "explicacao_tecnica": "CloudFront guarda objetos em edge locations próximas aos usuários, reduzindo latência e carga na origem; políticas de cache controlam a chave e a validade.\n\nTrade-off: TTL longo aumenta hit ratio, mas atrasa atualizações; versionar nomes de objetos é geralmente mais previsível que invalidar grandes volumes. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Em vez de buscar cada brinquedo na fábrica distante, pequenas lojas perto das crianças guardam os mais pedidos.",
+      "feedback_acerto": "Acertou: CloudFront guarda objetos em edge locations próximas aos usuários, reduzindo latência e carga na origem; políticas de cache controlam a chave e a validade. Quando outra opção poderia valer: TTL longo aumenta hit ratio, mas atrasa atualizações; versionar nomes de objetos é geralmente mais previsível que invalidar grandes volumes. Mnemônica: associe “Cache global com CloudFront” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Route 53 responde DNS; ele não armazena nem entrega o conteúdo.",
+        "B": "Incorreta — S3 não precisa de provisionamento de capacidade do bucket e isso não aproxima conteúdo do usuário.",
+        "C": "Incorreta — Isso cria operação, inconsistência e não fornece uma rede de borda global.",
+        "D": "Correta — CloudFront guarda objetos em edge locations próximas aos usuários, reduzindo latência e carga na origem; políticas de cache controlam a chave e a validade."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ConfiguringCaching.html",
+      "referencia_lab": "../labs/README.md — S3, CloudFront e WAF",
+      "exercicio_recomendado": "No lab S3, CloudFront e WAF, monte uma prova de conceito de Cache global com CloudFront; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    }
+  ]
+}

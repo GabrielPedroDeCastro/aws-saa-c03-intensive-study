@@ -1,0 +1,5 @@
+flowchart LR
+  App[Aplicação] -->|"alternativa barata"| DDB["DynamoDB on-demand\nPK customerId / SK orderId"]
+  App -->|"SDK DAX, opcional"| DAX["DAX privado\n1 nó lab / 3 nós HA"]
+  DAX -->|write-through / cache| DDB
+  Role["IAM role limitada\nà tabela"] -. assumida .-> DAX

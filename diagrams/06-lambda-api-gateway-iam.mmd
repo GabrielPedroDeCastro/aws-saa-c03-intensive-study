@@ -1,0 +1,6 @@
+flowchart LR
+  Client((Cliente)) -->|"GET /hello"| API["API Gateway\nHTTP API"]
+  API -->|"AWS_PROXY v2.0"| Lambda["Lambda arm64\n128 MB"]
+  Permission["Resource permission\nARN da rota"] -. permite .-> API
+  Role["Execution role\nsó logs próprios"] -. assumida .-> Lambda
+  Lambda --> Logs["CloudWatch Logs\nretenção 7 dias"]

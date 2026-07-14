@@ -1,0 +1,239 @@
+# Mini-quiz 06 — Domínio 2 — Projetar arquiteturas resilientes
+
+- **Tipo:** mini-quiz por domínio
+- **Questões:** 5
+- **Tempo sugerido:** 10 minutos
+- **Autoria:** Conteúdo original deste projeto; não reproduz questões reais nem dumps.
+
+## Instruções
+
+- Marque uma única alternativa (A, B, C ou D) por questão.
+- Faça a primeira tentativa sem consultar o gabarito.
+- Depois, leia a explicação de todas as alternativas e execute o exercício recomendado nos erros.
+
+---
+
+## 1. ALB e Auto Scaling multi-AZ
+
+> **ID:** `QUIZ-D2-06-Q01` · **Domínio:** D2 · **Dificuldade:** difícil · **Tempo:** 130 s · **Pontos:** 3
+
+A empresa de geoprocessamento mapa vivo recebe picos imprevisíveis sem poder degradar o SLA. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Uma aplicação HTTP stateless precisa continuar disponível quando uma instância ou uma AZ falhar e deve ajustar capacidade conforme o volume de requisições. Qual arquitetura escolher? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.
+
+- **A)** Usar somente DNS round-robin com endereços fixos e sem Auto Scaling.
+- **B)** Executar uma única instância grande e reiniciá-la com um cron job.
+- **C)** Colocar duas instâncias na mesma AZ sem health check.
+- **D)** ALB em pelo menos duas AZs, Auto Scaling group distribuído nessas AZs e target tracking baseado em uma métrica apropriada.
+
+<details>
+<summary>Gabarito e feedback detalhado</summary>
+
+**Resposta correta:** D
+
+**Explicação técnica**
+
+O ALB encaminha apenas para targets saudáveis e o Auto Scaling substitui capacidade e distribui instâncias entre AZs, eliminando pontos únicos no tier web.
+
+Trade-off: Sessões devem ficar fora das instâncias ou usar um armazenamento compartilhado; sticky sessions podem ajudar temporariamente, mas reduzem flexibilidade e não substituem estado externo. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.
+
+**Como se fosse para uma criança:** Vários caixas trabalham em lojas de bairros diferentes; um organizador manda clientes só aos caixas abertos e chama reforço quando a fila cresce.
+
+**Se acertou:** Acertou: O ALB encaminha apenas para targets saudáveis e o Auto Scaling substitui capacidade e distribui instâncias entre AZs, eliminando pontos únicos no tier web. Quando outra opção poderia valer: Sessões devem ficar fora das instâncias ou usar um armazenamento compartilhado; sticky sessions podem ajudar temporariamente, mas reduzem flexibilidade e não substituem estado externo. Mnemônica: associe “ALB e Auto Scaling multi-AZ” ao requisito decisivo destacado no cenário.
+
+**Se errou:** A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.
+
+**Por que cada alternativa está certa ou errada**
+
+- **A:** Incorreta — DNS não substitui health checks do balanceador nem reposição e ajuste automático de capacidade.
+- **B:** Incorreta — Ainda há ponto único de falha e recuperação dependente de automação frágil.
+- **C:** Incorreta — Uma falha da AZ afeta ambas, e sem health check o tráfego pode chegar a targets defeituosos.
+- **D:** Correta — O ALB encaminha apenas para targets saudáveis e o Auto Scaling substitui capacidade e distribui instâncias entre AZs, eliminando pontos únicos no tier web.
+
+**Referência oficial:** [https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-availability-zone.html](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-availability-zone.html)
+
+**Referência prática:** ../labs/README.md — ALB, Auto Scaling e health checks
+
+**Exercício recomendado:** No lab ALB, Auto Scaling e health checks, monte uma prova de conceito de ALB e Auto Scaling multi-AZ; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.
+
+</details>
+
+---
+
+## 2. Route 53 failover
+
+> **ID:** `QUIZ-D2-06-Q02` · **Domínio:** D2 · **Dificuldade:** fácil · **Tempo:** 90 s · **Pontos:** 1
+
+A edtech farol está migrando uma carga crítica para a AWS. A carga atende milhares de requisições por segundo em horários de pico. Uma aplicação possui um endpoint primário em uma região e um site de recuperação em outra. O DNS deve enviar tráfego ao secundário apenas quando o primário não estiver saudável. Qual política usar? Escolha a alternativa que atende diretamente ao requisito.
+
+- **A)** Criar registros Route 53 com failover routing, marcar primário/secundário e associar health check ao endpoint primário.
+- **B)** Usar geolocation apenas, pois localização detecta falha automaticamente.
+- **C)** Aumentar o TTL para 24 horas para acelerar a mudança.
+- **D)** Usar simple routing com dois endereços e nenhum health check.
+
+<details>
+<summary>Gabarito e feedback detalhado</summary>
+
+**Resposta correta:** A
+
+**Explicação técnica**
+
+A política de failover usa a saúde do recurso para responder com o secundário quando o primário falha, implementando active-passive no DNS.
+
+Trade-off: TTL influencia quanto tempo resolvers mantêm respostas antigas; failover DNS não encerra conexões já abertas e deve ser combinado com um plano de dados consistente. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.
+
+**Como se fosse para uma criança:** O mapa aponta para a loja principal; se a luz dela apaga, passa a apontar para a loja reserva.
+
+**Se acertou:** Acertou: A política de failover usa a saúde do recurso para responder com o secundário quando o primário falha, implementando active-passive no DNS. Quando outra opção poderia valer: TTL influencia quanto tempo resolvers mantêm respostas antigas; failover DNS não encerra conexões já abertas e deve ser combinado com um plano de dados consistente. Mnemônica: associe “Route 53 failover” ao requisito decisivo destacado no cenário.
+
+**Se errou:** A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.
+
+**Por que cada alternativa está certa ou errada**
+
+- **A:** Correta — A política de failover usa a saúde do recurso para responder com o secundário quando o primário falha, implementando active-passive no DNS.
+- **B:** Incorreta — Geolocation roteia pela origem do usuário; não é, por si só, política de recuperação por saúde.
+- **C:** Incorreta — TTL alto faz caches manterem a resposta anterior por mais tempo, retardando a convergência.
+- **D:** Incorreta — Simple routing não fornece o comportamento primário/secundário orientado por saúde.
+
+**Referência oficial:** [https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html)
+
+**Referência prática:** ../labs/README.md — Failover multi-região e Route 53
+
+**Exercício recomendado:** No lab Failover multi-região e Route 53, monte uma prova de conceito de Route 53 failover; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.
+
+</details>
+
+---
+
+## 3. Desacoplamento com SQS e DLQ
+
+> **ID:** `QUIZ-D2-06-Q03` · **Domínio:** D2 · **Dificuldade:** média · **Tempo:** 110 s · **Pontos:** 2
+
+A cooperativa campo vivo deve manter a solução simples para a equipe de plantão. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Pedidos chegam em rajadas e o processador pode ficar temporariamente indisponível. Nenhum pedido pode ser perdido, falhas repetidas devem ser isoladas e o produtor não deve esperar o processamento. Qual desenho usar? Considere o principal trade-off operacional e escolha a melhor solução.
+
+- **A)** Fazer o produtor chamar o processador de forma síncrona com retries infinitos.
+- **B)** Enviar pedidos para uma fila SQS, processar com consumidores idempotentes, configurar visibility timeout e redrive para uma DLQ.
+- **C)** Publicar somente em uma SNS topic sem qualquer assinatura durável.
+- **D)** Gravar pedidos em instance store de uma única EC2.
+
+<details>
+<summary>Gabarito e feedback detalhado</summary>
+
+**Resposta correta:** B
+
+**Explicação técnica**
+
+SQS armazena mensagens de forma durável e desacopla ritmos; visibility timeout evita processamento concorrente imediato e a DLQ isola mensagens após tentativas definidas.
+
+Trade-off: Standard queues entregam ao menos uma vez e podem duplicar; idempotência é essencial. FIFO deve ser usada apenas quando ordenação estrita/deduplicação justificarem suas restrições. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.
+
+**Como se fosse para uma criança:** Os pedidos entram numa caixa de correio; o cozinheiro pega um, e pedidos problemáticos vão para uma bandeja de investigação.
+
+**Se acertou:** Acertou: SQS armazena mensagens de forma durável e desacopla ritmos; visibility timeout evita processamento concorrente imediato e a DLQ isola mensagens após tentativas definidas. Quando outra opção poderia valer: Standard queues entregam ao menos uma vez e podem duplicar; idempotência é essencial. FIFO deve ser usada apenas quando ordenação estrita/deduplicação justificarem suas restrições. Mnemônica: associe “Desacoplamento com SQS e DLQ” ao requisito decisivo destacado no cenário.
+
+**Se errou:** A resposta correta é B. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.
+
+**Por que cada alternativa está certa ou errada**
+
+- **A:** Incorreta — Isso acopla os componentes, prende recursos e pode criar tempestades de retries.
+- **B:** Correta — SQS armazena mensagens de forma durável e desacopla ritmos; visibility timeout evita processamento concorrente imediato e a DLQ isola mensagens após tentativas definidas.
+- **C:** Incorreta — SNS sozinho não mantém backlog para um consumidor indisponível; uma assinatura SQS adicionaria durabilidade.
+- **D:** Incorreta — Instance store é efêmero e a instância continua sendo ponto único de falha.
+
+**Referência oficial:** [https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html)
+
+**Referência prática:** ../labs/README.md — Lambda, filas e tratamento de falhas
+
+**Exercício recomendado:** No lab Lambda, filas e tratamento de falhas, monte uma prova de conceito de Desacoplamento com SQS e DLQ; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.
+
+</details>
+
+---
+
+## 4. Fan-out com SNS e SQS
+
+> **ID:** `QUIZ-D2-06-Q04` · **Domínio:** D2 · **Dificuldade:** média · **Tempo:** 110 s · **Pontos:** 2
+
+A companhia aérea ventos recebe picos imprevisíveis sem poder degradar o SLA. A carga atende milhares de requisições por segundo em horários de pico. Cada evento de pedido deve ser processado independentemente por faturamento, estoque e analytics. Se um consumidor parar, os outros devem continuar e o backlog daquele consumidor deve ser preservado. Qual arquitetura é apropriada? Considere o principal trade-off operacional e escolha a melhor solução.
+
+- **A)** Guardar eventos em logs locais da instância produtora.
+- **B)** Usar uma única fila SQS e fazer os três serviços competirem pela mesma mensagem.
+- **C)** Publicar em uma SNS topic e criar uma fila SQS separada para cada consumidor, com subscriptions e DLQs próprias.
+- **D)** Chamar os três serviços sequencialmente dentro do produtor.
+
+<details>
+<summary>Gabarito e feedback detalhado</summary>
+
+**Resposta correta:** C
+
+**Explicação técnica**
+
+SNS replica cada mensagem para as filas assinantes; cada SQS mantém seu próprio backlog, ritmo e política de falhas, isolando consumidores.
+
+Trade-off: Uma única fila com três consumidores distribuiria mensagens entre eles, em vez de entregar uma cópia a cada função de negócio. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.
+
+**Como se fosse para uma criança:** Um locutor anuncia a notícia para três caixas de correio; cada equipe abre a sua quando puder.
+
+**Se acertou:** Acertou: SNS replica cada mensagem para as filas assinantes; cada SQS mantém seu próprio backlog, ritmo e política de falhas, isolando consumidores. Quando outra opção poderia valer: Uma única fila com três consumidores distribuiria mensagens entre eles, em vez de entregar uma cópia a cada função de negócio. Mnemônica: associe “Fan-out com SNS e SQS” ao requisito decisivo destacado no cenário.
+
+**Se errou:** A resposta correta é C. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.
+
+**Por que cada alternativa está certa ou errada**
+
+- **A:** Incorreta — Logs locais não são um canal durável e consumível de integração.
+- **B:** Incorreta — Consumidores concorrentes em uma fila recebem mensagens diferentes; não há fan-out por consumidor.
+- **C:** Correta — SNS replica cada mensagem para as filas assinantes; cada SQS mantém seu próprio backlog, ritmo e política de falhas, isolando consumidores.
+- **D:** Incorreta — A falha ou lentidão de um serviço afeta todos e acopla o produtor aos consumidores.
+
+**Referência oficial:** [https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html](https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html)
+
+**Referência prática:** ../labs/README.md — Eventos, SNS, SQS e Lambda
+
+**Exercício recomendado:** No lab Eventos, SNS, SQS e Lambda, monte uma prova de conceito de Fan-out com SNS e SQS; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.
+
+</details>
+
+---
+
+## 5. Estratégias de disaster recovery
+
+> **ID:** `QUIZ-D2-06-Q05` · **Domínio:** D2 · **Dificuldade:** difícil · **Tempo:** 130 s · **Pontos:** 3
+
+A empresa de geoprocessamento mapa vivo está migrando uma carga crítica para a AWS. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Um sistema regional exige RTO de 15 minutos e RPO de poucos minutos. A empresa aceita manter capacidade reduzida ativa na região de recuperação, mas não quer pagar por uma cópia em escala total. Qual estratégia se encaixa melhor? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.
+
+- **A)** Pilot light contendo somente dados, sem automação para subir a aplicação.
+- **B)** Multi-site active-active em escala total obrigatoriamente.
+- **C)** Backup and restore com backups semanais offline.
+- **D)** Warm standby: manter uma versão funcional em escala reduzida na região secundária, replicar dados e escalar durante o failover.
+
+<details>
+<summary>Gabarito e feedback detalhado</summary>
+
+**Resposta correta:** D
+
+**Explicação técnica**
+
+Warm standby já executa todos os componentes essenciais, reduzindo o RTO em comparação a pilot light sem manter capacidade integral como active-active.
+
+Trade-off: Pilot light custa menos, mas precisa iniciar/implantar parte relevante da aplicação; multi-site active-active oferece RTO menor com maior custo e complexidade. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.
+
+**Como se fosse para uma criança:** Há uma lojinha reserva já aberta com poucos caixas; numa emergência, ela chama reforços rapidamente.
+
+**Se acertou:** Acertou: Warm standby já executa todos os componentes essenciais, reduzindo o RTO em comparação a pilot light sem manter capacidade integral como active-active. Quando outra opção poderia valer: Pilot light custa menos, mas precisa iniciar/implantar parte relevante da aplicação; multi-site active-active oferece RTO menor com maior custo e complexidade. Mnemônica: associe “Estratégias de disaster recovery” ao requisito decisivo destacado no cenário.
+
+**Se errou:** A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.
+
+**Por que cada alternativa está certa ou errada**
+
+- **A:** Incorreta — A ausência de componentes e automação torna o RTO incerto e provavelmente maior.
+- **B:** Incorreta — Atenderia ou superaria o RTO, mas viola a intenção de evitar custo de capacidade integral quando warm standby basta.
+- **C:** Incorreta — Em geral não atende RPO de minutos nem RTO de 15 minutos.
+- **D:** Correta — Warm standby já executa todos os componentes essenciais, reduzindo o RTO em comparação a pilot light sem manter capacidade integral como active-active.
+
+**Referência oficial:** [https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html)
+
+**Referência prática:** ../labs/README.md — Cenário de recuperação multi-região
+
+**Exercício recomendado:** No lab Cenário de recuperação multi-região, monte uma prova de conceito de Estratégias de disaster recovery; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.
+
+</details>
+
+---

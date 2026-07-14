@@ -1,0 +1,191 @@
+{
+  "id": "QUIZ-D2-04",
+  "titulo": "Mini-quiz 04 — Domínio 2 — Projetar arquiteturas resilientes",
+  "tipo": "mini-quiz por domínio",
+  "versao_exame": "AWS Certified Solutions Architect – Associate (SAA-C03)",
+  "autoria": "Conteúdo original deste projeto; não reproduz questões reais nem dumps.",
+  "instrucoes": [
+    "Marque uma única alternativa (A, B, C ou D) por questão.",
+    "Faça a primeira tentativa sem consultar o gabarito.",
+    "Depois, leia a explicação de todas as alternativas e execute o exercício recomendado nos erros."
+  ],
+  "quantidade_questoes": 5,
+  "tempo_total_sugerido_minutos": 10,
+  "pontos_totais": 9,
+  "distribuicao_dominios": {
+    "D2": 5
+  },
+  "distribuicao_dificuldade": {
+    "difícil": 1,
+    "fácil": 2,
+    "média": 2
+  },
+  "distribuicao_gabarito": {
+    "A": 1,
+    "B": 2,
+    "C": 1,
+    "D": 1
+  },
+  "questoes": [
+    {
+      "id": "QUIZ-D2-04-Q01",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Desacoplamento com SQS e DLQ",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "A cooperativa campo vivo quer substituir um componente autogerenciado por um serviço gerenciado. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Pedidos chegam em rajadas e o processador pode ficar temporariamente indisponível. Nenhum pedido pode ser perdido, falhas repetidas devem ser isoladas e o produtor não deve esperar o processamento. Qual desenho usar? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Fazer o produtor chamar o processador de forma síncrona com retries infinitos.",
+        "B": "Enviar pedidos para uma fila SQS, processar com consumidores idempotentes, configurar visibility timeout e redrive para uma DLQ.",
+        "C": "Publicar somente em uma SNS topic sem qualquer assinatura durável.",
+        "D": "Gravar pedidos em instance store de uma única EC2."
+      },
+      "resposta_correta": "B",
+      "explicacao_tecnica": "SQS armazena mensagens de forma durável e desacopla ritmos; visibility timeout evita processamento concorrente imediato e a DLQ isola mensagens após tentativas definidas.\n\nTrade-off: Standard queues entregam ao menos uma vez e podem duplicar; idempotência é essencial. FIFO deve ser usada apenas quando ordenação estrita/deduplicação justificarem suas restrições. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Os pedidos entram numa caixa de correio; o cozinheiro pega um, e pedidos problemáticos vão para uma bandeja de investigação.",
+      "feedback_acerto": "Acertou: SQS armazena mensagens de forma durável e desacopla ritmos; visibility timeout evita processamento concorrente imediato e a DLQ isola mensagens após tentativas definidas. Quando outra opção poderia valer: Standard queues entregam ao menos uma vez e podem duplicar; idempotência é essencial. FIFO deve ser usada apenas quando ordenação estrita/deduplicação justificarem suas restrições. Mnemônica: associe “Desacoplamento com SQS e DLQ” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é B. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Isso acopla os componentes, prende recursos e pode criar tempestades de retries.",
+        "B": "Correta — SQS armazena mensagens de forma durável e desacopla ritmos; visibility timeout evita processamento concorrente imediato e a DLQ isola mensagens após tentativas definidas.",
+        "C": "Incorreta — SNS sozinho não mantém backlog para um consumidor indisponível; uma assinatura SQS adicionaria durabilidade.",
+        "D": "Incorreta — Instance store é efêmero e a instância continua sendo ponto único de falha."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html",
+      "referencia_lab": "../labs/README.md — Lambda, filas e tratamento de falhas",
+      "exercicio_recomendado": "No lab Lambda, filas e tratamento de falhas, monte uma prova de conceito de Desacoplamento com SQS e DLQ; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-04-Q02",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Fan-out com SNS e SQS",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "A companhia aérea ventos vai lançar o serviço em três países. A carga atende milhares de requisições por segundo em horários de pico. Cada evento de pedido deve ser processado independentemente por faturamento, estoque e analytics. Se um consumidor parar, os outros devem continuar e o backlog daquele consumidor deve ser preservado. Qual arquitetura é apropriada? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Guardar eventos em logs locais da instância produtora.",
+        "B": "Usar uma única fila SQS e fazer os três serviços competirem pela mesma mensagem.",
+        "C": "Publicar em uma SNS topic e criar uma fila SQS separada para cada consumidor, com subscriptions e DLQs próprias.",
+        "D": "Chamar os três serviços sequencialmente dentro do produtor."
+      },
+      "resposta_correta": "C",
+      "explicacao_tecnica": "SNS replica cada mensagem para as filas assinantes; cada SQS mantém seu próprio backlog, ritmo e política de falhas, isolando consumidores.\n\nTrade-off: Uma única fila com três consumidores distribuiria mensagens entre eles, em vez de entregar uma cópia a cada função de negócio. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Um locutor anuncia a notícia para três caixas de correio; cada equipe abre a sua quando puder.",
+      "feedback_acerto": "Acertou: SNS replica cada mensagem para as filas assinantes; cada SQS mantém seu próprio backlog, ritmo e política de falhas, isolando consumidores. Quando outra opção poderia valer: Uma única fila com três consumidores distribuiria mensagens entre eles, em vez de entregar uma cópia a cada função de negócio. Mnemônica: associe “Fan-out com SNS e SQS” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é C. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Logs locais não são um canal durável e consumível de integração.",
+        "B": "Incorreta — Consumidores concorrentes em uma fila recebem mensagens diferentes; não há fan-out por consumidor.",
+        "C": "Correta — SNS replica cada mensagem para as filas assinantes; cada SQS mantém seu próprio backlog, ritmo e política de falhas, isolando consumidores.",
+        "D": "Incorreta — A falha ou lentidão de um serviço afeta todos e acopla o produtor aos consumidores."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html",
+      "referencia_lab": "../labs/README.md — Eventos, SNS, SQS e Lambda",
+      "exercicio_recomendado": "No lab Eventos, SNS, SQS e Lambda, monte uma prova de conceito de Fan-out com SNS e SQS; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-04-Q03",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Estratégias de disaster recovery",
+      "dificuldade": "difícil",
+      "tempo_sugerido_segundos": 130,
+      "pontos": 3,
+      "enunciado": "A empresa de geoprocessamento mapa vivo precisa tomar uma decisão com base em desempenho, segurança e custo total. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Um sistema regional exige RTO de 15 minutos e RPO de poucos minutos. A empresa aceita manter capacidade reduzida ativa na região de recuperação, mas não quer pagar por uma cópia em escala total. Qual estratégia se encaixa melhor? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.",
+      "alternativas": {
+        "A": "Pilot light contendo somente dados, sem automação para subir a aplicação.",
+        "B": "Multi-site active-active em escala total obrigatoriamente.",
+        "C": "Backup and restore com backups semanais offline.",
+        "D": "Warm standby: manter uma versão funcional em escala reduzida na região secundária, replicar dados e escalar durante o failover."
+      },
+      "resposta_correta": "D",
+      "explicacao_tecnica": "Warm standby já executa todos os componentes essenciais, reduzindo o RTO em comparação a pilot light sem manter capacidade integral como active-active.\n\nTrade-off: Pilot light custa menos, mas precisa iniciar/implantar parte relevante da aplicação; multi-site active-active oferece RTO menor com maior custo e complexidade. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Há uma lojinha reserva já aberta com poucos caixas; numa emergência, ela chama reforços rapidamente.",
+      "feedback_acerto": "Acertou: Warm standby já executa todos os componentes essenciais, reduzindo o RTO em comparação a pilot light sem manter capacidade integral como active-active. Quando outra opção poderia valer: Pilot light custa menos, mas precisa iniciar/implantar parte relevante da aplicação; multi-site active-active oferece RTO menor com maior custo e complexidade. Mnemônica: associe “Estratégias de disaster recovery” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — A ausência de componentes e automação torna o RTO incerto e provavelmente maior.",
+        "B": "Incorreta — Atenderia ou superaria o RTO, mas viola a intenção de evitar custo de capacidade integral quando warm standby basta.",
+        "C": "Incorreta — Em geral não atende RPO de minutos nem RTO de 15 minutos.",
+        "D": "Correta — Warm standby já executa todos os componentes essenciais, reduzindo o RTO em comparação a pilot light sem manter capacidade integral como active-active."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html",
+      "referencia_lab": "../labs/README.md — Cenário de recuperação multi-região",
+      "exercicio_recomendado": "No lab Cenário de recuperação multi-região, monte uma prova de conceito de Estratégias de disaster recovery; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-04-Q04",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Replicação S3 entre regiões",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "A edtech farol quer substituir um componente autogerenciado por um serviço gerenciado. A carga atende milhares de requisições por segundo em horários de pico. Objetos de um bucket precisam ser copiados automaticamente para outra região para recuperação. A empresa também quer preservar versões e impedir que uma exclusão acidental destrua imediatamente a cópia histórica. O que configurar? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Habilitar versionamento nos buckets, configurar S3 Cross-Region Replication e definir cuidadosamente replicação de delete markers e retenção/Object Lock quando exigido.",
+        "B": "Usar lifecycle expiration no bucket de origem como mecanismo de cópia.",
+        "C": "Montar o bucket como EBS e fazer snapshot da instância.",
+        "D": "Desativar versionamento para reduzir o número de cópias."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "CRR requer versionamento e replica novos objetos conforme as regras. A política de delete markers e mecanismos de retenção determinam o comportamento diante de exclusões.\n\nTrade-off: Replicação não é retroativa por padrão e não substitui toda estratégia de backup; S3 Batch Replication pode tratar objetos existentes. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Cada desenho ganha uma cópia em outra cidade e versões antigas ficam num fichário que uma borracha comum não apaga.",
+      "feedback_acerto": "Acertou: CRR requer versionamento e replica novos objetos conforme as regras. A política de delete markers e mecanismos de retenção determinam o comportamento diante de exclusões. Quando outra opção poderia valer: Replicação não é retroativa por padrão e não substitui toda estratégia de backup; S3 Batch Replication pode tratar objetos existentes. Mnemônica: associe “Replicação S3 entre regiões” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — CRR requer versionamento e replica novos objetos conforme as regras. A política de delete markers e mecanismos de retenção determinam o comportamento diante de exclusões.",
+        "B": "Incorreta — Lifecycle gerencia transição/expiração e não replica objetos para outra região.",
+        "C": "Incorreta — S3 não é montado como volume EBS, e snapshot de EC2 não protege objetos do bucket.",
+        "D": "Incorreta — CRR exige versionamento e desativá-lo prejudica recuperação de alterações/exclusões."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html",
+      "referencia_lab": "../labs/README.md — S3 versionado e recuperação",
+      "exercicio_recomendado": "No lab S3 versionado e recuperação, monte uma prova de conceito de Replicação S3 entre regiões; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-04-Q05",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Amazon EFS Regional",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "A cooperativa campo vivo vai lançar o serviço em três países. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Um conjunto de instâncias Linux em várias AZs precisa compartilhar arquivos POSIX. Os dados devem permanecer acessíveis quando uma instância ou uma AZ falhar, sem gerenciar servidores de arquivos. Qual armazenamento usar? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Hospedar um servidor NFS único em EC2 sem standby.",
+        "B": "Amazon EFS Regional montado pelos clientes nas diferentes AZs, com mount targets e security groups adequados.",
+        "C": "Usar um único volume EBS em uma AZ e anexá-lo simultaneamente a qualquer número de instâncias Linux.",
+        "D": "Usar instance store e copiar arquivos manualmente à noite."
+      },
+      "resposta_correta": "B",
+      "explicacao_tecnica": "EFS Regional fornece sistema de arquivos gerenciado, elástico e multi-AZ, adequado ao compartilhamento simultâneo entre instâncias Linux.\n\nTrade-off: EFS One Zone pode custar menos, mas não atende ao requisito de tolerância à perda de uma AZ. EBS é zonal e normalmente anexado a uma instância. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "É uma estante compartilhada com portas em vários bairros; se uma porta fecha, as outras ainda chegam aos livros.",
+      "feedback_acerto": "Acertou: EFS Regional fornece sistema de arquivos gerenciado, elástico e multi-AZ, adequado ao compartilhamento simultâneo entre instâncias Linux. Quando outra opção poderia valer: EFS One Zone pode custar menos, mas não atende ao requisito de tolerância à perda de uma AZ. EBS é zonal e normalmente anexado a uma instância. Mnemônica: associe “Amazon EFS Regional” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é B. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — O servidor seria ponto único de falha e exigiria administração.",
+        "B": "Correta — EFS Regional fornece sistema de arquivos gerenciado, elástico e multi-AZ, adequado ao compartilhamento simultâneo entre instâncias Linux.",
+        "C": "Incorreta — EBS é zonal e Multi-Attach possui tipos e cenários restritos; não vira um sistema de arquivos regional gerenciado.",
+        "D": "Incorreta — Instance store é efêmero e a cópia manual não dá consistência nem alta disponibilidade."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html",
+      "referencia_lab": "../labs/README.md — Armazenamento compartilhado multi-AZ",
+      "exercicio_recomendado": "No lab Armazenamento compartilhado multi-AZ, monte uma prova de conceito de Amazon EFS Regional; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    }
+  ]
+}

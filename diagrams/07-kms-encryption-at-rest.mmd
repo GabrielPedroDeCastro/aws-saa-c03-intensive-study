@@ -1,0 +1,6 @@
+flowchart TB
+  KMS["Customer managed KMS key\nrotação + key policy"] -->|envelope encryption| S3["S3 SSE-KMS\nBucket Key"]
+  KMS -->|envelope encryption| DDB["DynamoDB SSE-KMS"]
+  KMS -->|data key reuse 300s| SQS["SQS SSE-KMS"]
+  Alias["alias/saa-lab-07"] --> KMS
+  IAM["IAM + key policy"] -. autoriza uso .-> KMS

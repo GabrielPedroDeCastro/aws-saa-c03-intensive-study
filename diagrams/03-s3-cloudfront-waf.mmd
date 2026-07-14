@@ -1,0 +1,5 @@
+flowchart LR
+  User((Usuário)) -->|HTTPS| CF[CloudFront]
+  WAF["AWS WAF\nmanaged rules + rate limit"] -. protege .-> CF
+  CF -->|"OAC + SigV4"| S3["S3 privado\nBlock Public Access"]
+  Direct["Acesso direto público"] -. bloqueado .-> S3

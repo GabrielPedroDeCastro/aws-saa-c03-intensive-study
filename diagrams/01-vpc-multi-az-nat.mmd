@@ -1,0 +1,17 @@
+flowchart TB
+  Internet((Internet)) --> IGW[Internet Gateway]
+  subgraph VPC["VPC 10.10.0.0/16"]
+    subgraph AZA["AZ A"]
+      PubA["Subnet pública A\n10.10.0.0/24"] --> NatA[NAT Gateway A]
+      PrivA["Subnet privada A\n10.10.10.0/24"] --> NatA
+    end
+    subgraph AZB["AZ B"]
+      PubB["Subnet pública B\n10.10.1.0/24"] --> NatB["NAT B (modo PerAZ)"]
+      PrivB["Subnet privada B\n10.10.11.0/24"] --> NatB
+      PrivB -. "modo Single" .-> NatA
+    end
+    IGW --> PubA
+    IGW --> PubB
+    NatA --> IGW
+    NatB --> IGW
+  end

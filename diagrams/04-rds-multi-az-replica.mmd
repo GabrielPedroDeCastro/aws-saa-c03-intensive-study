@@ -1,0 +1,6 @@
+flowchart LR
+  App["Cliente na VPC\nClient SG"] -->|5432| Writer[Endpoint de escrita]
+  Writer --> Primary["RDS PostgreSQL\nPrimary AZ A"]
+  Primary -. "replicação síncrona / failover" .-> Standby["Standby AZ B\nnão legível"]
+  Primary -. "replicação assíncrona" .-> Replica["Read replica opcional\nendpoint de leitura"]
+  Secrets[Secrets Manager] --> Primary

@@ -1,0 +1,4 @@
+aws_region             = "us-east-1"
+project_name           = "saa-lab-05"
+enable_dax             = false
+dax_replication_factor = 1

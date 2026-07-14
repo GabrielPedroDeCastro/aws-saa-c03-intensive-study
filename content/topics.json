@@ -1,0 +1,259 @@
+{
+  "exam": "AWS Certified Solutions Architect - Associate (SAA-C03)",
+  "version_checked": "2026-07-14",
+  "pricing_note": "As faixas são didáticas e relativas. O total depende de região, duração, tráfego e quantidade. Confirme no AWS Pricing Calculator antes do deploy.",
+  "domains": [
+    {
+      "id": "D1",
+      "title": "Projetar arquiteturas seguras",
+      "weight": 30,
+      "objective": "Controlar identidade, rede, dados e detecção aplicando privilégio mínimo e defesa em profundidade.",
+      "topics": [
+        {
+          "title": "IAM, federação e múltiplas contas",
+          "technical": "IAM policies avaliam identidade, recurso, condições e negações explícitas. Roles entregam credenciais temporárias via STS; IAM Identity Center centraliza acesso humano; Organizations, OUs e SCPs criam limites de permissão entre contas.",
+          "child": "É um parque com pulseiras: cada pessoa ganha só as chaves dos brinquedos permitidos, e a regra do parque pode proibir uma porta mesmo que alguém tenha uma chave.",
+          "when": "Acesso humano federado, workloads sem chaves longas, delegação cross-account e governança multi-account.",
+          "limits": "SCP não concede permissão; define o teto. Resource policy, permissions boundary e session policy podem reduzir o acesso efetivo. Root user não é governado como um usuário IAM comum.",
+          "cost": "IAM, STS e Organizations não têm tarifa direta; serviços auxiliares e logs podem cobrar.",
+          "practices": "MFA, roles temporárias, menor privilégio, contas separadas, Access Analyzer e bloqueio do root.",
+          "traps": "Confundir autenticação com autorização; achar que SCP concede acesso; guardar access key em EC2 em vez de usar instance profile.",
+          "links": ["https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html", "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"]
+        },
+        {
+          "title": "Segmentação de rede, SG, NACL e endpoints",
+          "technical": "Security Groups são stateful e associados a ENIs; NACLs são stateless e atuam na borda da subnet com allow e deny ordenados. Public NAT Gateway zonal fica em subnet pública; Regional NAT Gateway usa um ID e expande entre AZs sem subnet pública. Gateway endpoints atendem S3/DynamoDB; interface endpoints usam PrivateLink e ENIs privadas.",
+          "child": "O segurança da casa lembra quem entrou; a cancela da rua checa cada ida e volta. Um túnel privado leva ao serviço sem passar pela avenida pública.",
+          "when": "Isolar camadas, limitar portas, manter tráfego para serviços AWS privado e reduzir exposição/NAT.",
+          "limits": "SG não oferece deny explícito. NACL exige portas efêmeras de retorno. Regional NAT não oferece private NAT e pode não estar disponível em todas as partições/regiões. Interface endpoints têm custo por hora e dados e são regionais.",
+          "cost": "SG/NACL sem tarifa direta; gateway endpoint sem tarifa; interface endpoint é custo médio por AZ/hora e GB.",
+          "practices": "Referenciar SGs entre camadas, negar public IP por padrão, escolher conscientemente NAT zonal ou regional, usar endpoints privados e VPC Flow Logs para diagnóstico.",
+          "traps": "Colocar public NAT zonal em subnet privada; achar que todo NAT atual exige subnet pública; bloquear resposta na NACL; achar que endpoint policy substitui IAM/resource policy.",
+          "links": ["https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html", "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-aws-services.html", "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html"]
+        },
+        {
+          "title": "Proteção de borda: CloudFront, WAF, Shield e Route 53",
+          "technical": "CloudFront distribui e filtra conteúdo na borda; AWS WAF aplica regras L7; Shield Standard oferece mitigação DDoS básica automática; Route 53 entrega DNS e políticas de roteamento com health checks.",
+          "child": "São postos de entrega perto das crianças, com um porteiro que barra pedidos maldosos e um escudo contra multidões de robôs.",
+          "when": "Aplicações globais, sites estáticos, APIs públicas, baixa latência e proteção HTTP/S.",
+          "limits": "WAF não substitui autenticação nem corrige vulnerabilidade. CloudFront exige estratégia de cache/invalidação. Health check DNS não move estado de banco.",
+          "cost": "CloudFront por dados/requests; WAF por Web ACL, regras e requests; Shield Standard incluído, Shield Advanced é alto custo fixo.",
+          "practices": "OAC para S3, TLS, managed rule groups, rate limit, logs amostrados e origin restrito ao CloudFront.",
+          "traps": "Usar website endpoint S3 com OAC; confundir Global Accelerator L4 com CloudFront L7/cache; supor que WAF atua em NLB comum.",
+          "links": ["https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html", "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"]
+        },
+        {
+          "title": "Criptografia, KMS, ACM e segredos",
+          "technical": "KMS gerencia chaves e envelope encryption; key policy é o controle primário. ACM provisiona certificados integrados e também certificados públicos exportáveis quando essa opção é habilitada na solicitação. Secrets Manager armazena e rotaciona segredos; Parameter Store atende configuração e segredos simples.",
+          "child": "O dado entra numa caixa com cadeado; o cofre guarda a chave-mestra e só empresta uma chavinha temporária a quem tem autorização.",
+          "when": "Dados em repouso, TLS, controle/auditoria de chaves e credenciais rotacionáveis.",
+          "limits": "KMS tem quotas e cobra chamadas; chaves são regionais, salvo multi-Region keys. Certificado público ACM só é exportável se solicitado com export habilitado; certificados emitidos antes do recurso ou sem essa opção permanecem não exportáveis.",
+          "cost": "AWS owned keys geralmente sem mensalidade; customer managed keys e chamadas KMS cobram; Secrets Manager cobra por segredo e API; certificado público ACM exportável tem cobrança adicional conforme a página vigente.",
+          "practices": "Separar admins de usuários da chave, rotação, grants com cuidado, preferir integração ACM não exportável quando possível, proteger private keys exportadas, TLS obrigatório e nenhum segredo no código.",
+          "traps": "Confundir alias com chave; esquecer key policy; afirmar que nenhum certificado público ACM pode ser exportado; escolher SSE-S3 quando a exigência pede controle/auditoria de CMK.",
+          "links": ["https://docs.aws.amazon.com/kms/latest/developerguide/overview.html", "https://docs.aws.amazon.com/acm/latest/userguide/acm-exportable-certificates.html", "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"]
+        },
+        {
+          "title": "Auditoria e detecção: CloudTrail, Config, GuardDuty e Macie",
+          "technical": "CloudTrail registra chamadas de API; Config avalia configuração e histórico; GuardDuty detecta ameaças a partir de sinais; Security Hub agrega achados; Macie descobre dados sensíveis em S3; CloudWatch monitora métricas/logs/alarmes.",
+          "child": "Uma câmera grava quem mexeu, um fiscal compara a sala com as regras, e um detetive procura comportamentos estranhos.",
+          "when": "Auditoria, conformidade, investigação, detecção de ameaça e resposta automatizada.",
+          "limits": "Cada serviço observa um tipo de sinal; nenhum bloqueia tudo sozinho. Data events do CloudTrail e análise de dados podem elevar custo.",
+          "cost": "Trilha de management events tem camada inicial; cópias, data events, Config items, GuardDuty e Macie cobram por uso.",
+          "practices": "Trilha organizacional multi-Region, logs imutáveis, alarmes críticos, agregador Config e resposta via EventBridge.",
+          "traps": "Usar CloudWatch como trilha de auditoria completa; esperar prevenção do GuardDuty; ativar data events indiscriminadamente.",
+          "links": ["https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html", "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"]
+        }
+      ]
+    },
+    {
+      "id": "D2",
+      "title": "Projetar arquiteturas resilientes",
+      "weight": 26,
+      "objective": "Tolerar falhas, recuperar dados e escalar componentes desacoplados sem criar pontos únicos de falha.",
+      "topics": [
+        {
+          "title": "Multi-AZ com ELB e Auto Scaling",
+          "technical": "ALB distribui HTTP/S por targets saudáveis; Auto Scaling mantém capacidade e substitui instâncias. Subnets em duas ou mais AZs removem o servidor único como ponto de falha.",
+          "child": "Se uma lanchonete fecha, o atendente manda as crianças para outra e chama novos cozinheiros quando a fila cresce.",
+          "when": "Web/API stateless, demanda variável e requisito de alta disponibilidade regional.",
+          "limits": "Sessão local quebra elasticidade; health check mal ajustado causa substituição em loop; Multi-AZ não é multi-Region.",
+          "cost": "ALB por hora/LCU e EC2 por capacidade; custo médio e elástico. Duas AZs podem gerar transferência entre AZs.",
+          "practices": "Imagens imutáveis, session store externo, target tracking, grace period e teste de falha de uma AZ.",
+          "traps": "Confundir scale out com scale up; escolher NLB quando precisa roteamento por path; habilitar ASG em uma única AZ.",
+          "links": ["https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html", "https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-benefits.html"]
+        },
+        {
+          "title": "Desacoplamento com SQS, SNS e EventBridge",
+          "technical": "SQS cria buffer e pull; SNS faz fanout push; EventBridge roteia eventos por regras e schema. DLQ isola falhas e idempotência torna reprocessamento seguro.",
+          "child": "Em vez de gritar pedido na cozinha, coloque bilhetes numa caixa; vários mensageiros podem copiar ou encaminhar cada bilhete.",
+          "when": "Picos, processamento assíncrono, fanout, integração entre domínios e redução de dependência temporal.",
+          "limits": "Standard entrega ao menos uma vez e pode duplicar; FIFO tem restrições/throughput próprios; visibilidade não é tempo de retenção.",
+          "cost": "Baixo e por request/volume; payload grande deve ir para S3 com referência na mensagem.",
+          "practices": "Idempotência, DLQ/redrive, long polling, visibility timeout maior que processamento e métricas de idade.",
+          "traps": "Esperar exactly-once de SQS Standard; usar SNS sem persistência quando consumidor pode ficar fora; apagar antes de concluir.",
+          "links": ["https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html", "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"]
+        },
+        {
+          "title": "Resiliência de dados: RDS, Aurora e DynamoDB",
+          "technical": "RDS Multi-AZ fornece failover síncrono; read replicas escalam leitura de forma assíncrona. Aurora usa storage distribuído e endpoints. DynamoDB replica entre AZs por padrão e Global Tables atendem multi-Region ativo-ativo.",
+          "child": "Uma cópia pronta assume quando o caderno principal rasga; outras cópias servem só para muita gente ler ao mesmo tempo.",
+          "when": "Bancos gerenciados com RTO/RPO, leitura escalável e continuidade regional.",
+          "limits": "Standby Multi-AZ comum não atende leitura. Replica pode atrasar. Failover exige reconexão e testes no cliente.",
+          "cost": "Multi-AZ e replicas elevam compute/storage; DynamoDB on-demand cobra por request e provisioned por capacidade.",
+          "practices": "Backups/PITR, endpoints em vez de IP, retry com backoff, proxy quando conexões são voláteis e teste de restore.",
+          "traps": "Escolher read replica para HA síncrona; ler do standby; confundir backup com replica e durabilidade com disponibilidade.",
+          "links": ["https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html", "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html"]
+        },
+        {
+          "title": "Backup e recuperação de desastre",
+          "technical": "RPO mede perda de dados aceitável; RTO mede tempo de restauração. Estratégias evoluem de backup/restore para pilot light, warm standby e active-active, com custo e velocidade crescentes.",
+          "child": "É decidir quantas páginas podemos perder e quanto tempo a loja pode ficar fechada; uma loja reserva pronta custa mais, mas abre rápido.",
+          "when": "Requisitos de continuidade, corrupção, exclusão acidental e falha regional.",
+          "limits": "Snapshot sem restore testado não prova recuperação. Replicação também replica erros. DNS tem TTL e clientes podem cachear.",
+          "cost": "Backup/restore é menor custo; active-active é maior. Storage, transferência e ambiente ocioso compõem a conta.",
+          "practices": "AWS Backup policies, cofres cross-account/Region, runbooks, restore drills e RPO/RTO mensuráveis.",
+          "traps": "Escolher active-active sem requisito; afirmar RPO zero com replicação assíncrona; ignorar dependências e secrets no DR.",
+          "links": ["https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/disaster-recovery-dr-objectives.html", "https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html"]
+        },
+        {
+          "title": "Conectividade híbrida e entre VPCs",
+          "technical": "Peering conecta duas VPCs sem trânsito. Transit Gateway cria hub transitivo. Site-to-Site VPN usa internet criptografada; Direct Connect oferece circuito dedicado e pode combinar VPN para criptografia.",
+          "child": "Peering é uma ponte entre duas ilhas; o Transit Gateway é uma rodoviária central; VPN é um túnel secreto pela estrada pública.",
+          "when": "Muitas VPCs, redes on-premises, segmentação por rotas e conectividade previsível.",
+          "limits": "CIDRs sobrepostos impedem rotas simples; peering não é transitivo; DX não é criptografado por padrão e leva tempo para provisionar.",
+          "cost": "Peering cobra transferência; TGW cobra attachment e dados; VPN por conexão/hora; DX tem porta e trânsito do provedor.",
+          "practices": "CIDR planejado, tabelas TGW segmentadas, VPN redundante, BGP e observabilidade de rotas.",
+          "traps": "Tentar trânsito A-B-C via peering; escolher DX para implantação imediata; esquecer rotas nos dois lados.",
+          "links": ["https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html", "https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html"]
+        }
+      ]
+    },
+    {
+      "id": "D3",
+      "title": "Projetar arquiteturas de alto desempenho",
+      "weight": 24,
+      "objective": "Selecionar compute, armazenamento, banco, rede e ingestão compatíveis com o padrão real de acesso.",
+      "topics": [
+        {
+          "title": "Escolha de compute: EC2, Lambda, ECS/EKS e Fargate",
+          "technical": "EC2 oferece controle de host; Lambda executa eventos sem servidor; ECS/EKS orquestram contêineres; Fargate remove gestão de instâncias. A escolha depende de duração, estado, portabilidade e controle.",
+          "child": "Você pode ter sua própria cozinha, alugar uma cozinha só por pedido ou usar caixas de almoço organizadas por um gerente.",
+          "when": "EC2 para controle/legado, Lambda para eventos curtos, contêineres para portabilidade e serviços long-running.",
+          "limits": "Lambda tem limite de duração, pacote e concorrência; Fargate tem combinações de CPU/memória; EKS adiciona complexidade operacional.",
+          "cost": "EC2 por capacidade; Lambda por request/duração; Fargate por vCPU/memória. O mais barato depende de utilização.",
+          "practices": "Stateless, métricas de saturação, right-sizing, concurrency control, imagens pequenas e scaling por demanda.",
+          "traps": "Escolher Lambda para job além do limite; assumir serverless sempre mais barato; usar target tracking com métrica que cai quando carga sobe.",
+          "links": ["https://docs.aws.amazon.com/lambda/latest/dg/welcome.html", "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"]
+        },
+        {
+          "title": "Escolha de armazenamento: S3, EBS, EFS e FSx",
+          "technical": "S3 é object storage; EBS é bloco para uma AZ; EFS é NFS regional elástico; FSx oferece sistemas especializados como Windows, Lustre, NetApp e OpenZFS.",
+          "child": "S3 é um depósito de caixas, EBS é o disco preso a um computador e EFS é um armário compartilhado por várias salas.",
+          "when": "Objetos/data lake, disco de SO/database, arquivos Linux compartilhados ou protocolo/workload especializado.",
+          "limits": "S3 não é filesystem POSIX comum; EBS não atravessa AZ; EFS tem latência de rede; tipo e throughput precisam casar com workload.",
+          "cost": "S3 é baixo por GB com requests; EBS provisiona GB/IOPS; EFS/FSx normalmente custam mais por GB e oferecem tiers.",
+          "practices": "Lifecycle, versioning, encryption, performance mode correto, snapshots e medir IOPS/throughput.",
+          "traps": "Usar instance store para durabilidade; anexar EBS comum em outra AZ; escolher EFS para arquivo Windows SMB.",
+          "links": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html", "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"]
+        },
+        {
+          "title": "Performance de bancos e cache",
+          "technical": "RDS/Aurora atendem relações/transações; DynamoDB atende chave-valor em escala; ElastiCache reduz leituras e sessões; DAX acelera DynamoDB com cache compatível; OpenSearch atende busca e analytics.",
+          "child": "O banco é a biblioteca; o cache deixa os livros mais pedidos na mesa, mas ainda precisamos saber qual exemplar é o verdadeiro.",
+          "when": "Escolher pelo modelo de acesso, consistência, latência, escala e necessidade de joins ou busca textual.",
+          "limits": "Cache traz invalidação; DynamoDB exige partition key bem distribuída; replicas têm lag; DAX não acelera writes nem consultas fora do padrão.",
+          "cost": "Compute/IO/storage para relacional; capacidade/request para DynamoDB; nós por hora para caches.",
+          "practices": "Definir access patterns antes do schema, índices seletivos, connection pooling, TTL e evitar hot partitions.",
+          "traps": "Adicionar DAX a write-heavy; usar read replica para consistência forte; achar que Multi-AZ melhora leitura.",
+          "links": ["https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html", "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_BestPractices.html"]
+        },
+        {
+          "title": "Rede global e entrega de conteúdo",
+          "technical": "CloudFront usa cache L7; Global Accelerator fornece IPs anycast e backbone para TCP/UDP; Route 53 escolhe endpoints via políticas DNS; VPC endpoints encurtam caminhos privados a serviços.",
+          "child": "Um depósito próximo entrega cópias; uma via expressa global leva o carro ao melhor portão; placas DNS dizem para qual cidade ir.",
+          "when": "Latência global, failover, aceleração de conteúdo dinâmico/estático e IPs globais estáveis.",
+          "limits": "DNS depende de TTL; CloudFront só usa HTTP/S; Global Accelerator não armazena cache.",
+          "cost": "CloudFront/GA por dados e recursos; Route 53 por zona/query/health check; transferência entre AZ/Region pode cobrar.",
+          "practices": "Cache key mínima, compressão, TLS, origin shield quando útil, health checks e testes por geografia.",
+          "traps": "Escolher GA quando precisa cache; usar geolocation quando requisito é menor latência; confundir failover DNS com failover instantâneo.",
+          "links": ["https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html", "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"]
+        },
+        {
+          "title": "Ingestão e processamento: Kinesis, SQS, MSK e Glue",
+          "technical": "Kinesis Data Streams atende streaming por shards e ordering por partition key; Amazon Data Firehose (antigo Kinesis Data Firehose) entrega lotes gerenciados; MSK executa Kafka; Glue cataloga e processa ETL; SQS desacopla tarefas.",
+          "child": "Pode ser uma esteira contínua, uma caixa de tarefas ou um caminhão que junta pacotes antes de levar ao depósito.",
+          "when": "Telemetria em tempo real, eventos ordenados, ecossistema Kafka, ETL/data lake e filas de trabalho.",
+          "limits": "Ordering é por shard/partition, não global automático; consumidores e retenção têm limites; MSK exige mais operação.",
+          "cost": "Serverless/managed por volume, duração ou capacidade; MSK provisionado tem custo contínuo.",
+          "practices": "Partition key uniforme, backpressure, checkpoint, schema, DLQ e observabilidade do atraso do consumidor.",
+          "traps": "Usar SQS para múltiplos consumidores receberem a mesma cópia sem SNS; confundir Amazon Data Firehose com stream de baixa latência bidirecional.",
+          "links": ["https://docs.aws.amazon.com/streams/latest/dev/introduction.html", "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"]
+        }
+      ]
+    },
+    {
+      "id": "D4",
+      "title": "Projetar arquiteturas otimizadas para custos",
+      "weight": 20,
+      "objective": "Atender requisitos pelo menor custo total, eliminando desperdício sem sacrificar segurança ou resiliência necessárias.",
+      "topics": [
+        {
+          "title": "Custo de compute e modelos de compra",
+          "technical": "On-Demand é flexível; Savings Plans e Reserved Instances trocam compromisso por desconto; Spot usa capacidade interrompível; Auto Scaling e right-sizing ajustam quantidade; Graviton pode melhorar preço/desempenho.",
+          "child": "Pague uma corrida avulsa, compre um passe mensal ou aceite sair do brinquedo quando o parque precisar do assento em troca de desconto.",
+          "when": "Base estável para compromissos, jobs tolerantes a interrupção para Spot e picos imprevisíveis para On-Demand.",
+          "limits": "Compromisso pode virar desperdício; Spot pode interromper; licença/arquitetura pode impedir Graviton.",
+          "cost": "Varia de alto/flexível a baixo/comprometido; meça utilização antes de comprar compromisso.",
+          "practices": "Compute Optimizer, cobertura gradual, mix ASG, checkpoint em Spot e desligamento agendado de ambientes não produtivos.",
+          "traps": "Comprar RI para carga ainda desconhecida; usar Spot em banco único; confundir Standard RI com flexibilidade de Savings Plans.",
+          "links": ["https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html", "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"]
+        },
+        {
+          "title": "Classes S3, lifecycle, EBS e snapshots",
+          "technical": "S3 Standard, Intelligent-Tiering e classes IA/Archive equilibram acesso, duração mínima e recuperação. Lifecycle move/expira objetos. EBS cobra capacidade provisionada e snapshots incrementais.",
+          "child": "Brinquedos diários ficam na prateleira; os de férias vão ao armário; os raros vão ao depósito barato, mas demoram para voltar.",
+          "when": "Dados com frequência previsível ou desconhecida, retenção regulatória, backup e volumes subutilizados.",
+          "limits": "IA/Archive têm duração mínima, tamanho mínimo ou taxa de recuperação; apagar cedo pode cobrar; snapshot não reduz volume atual.",
+          "cost": "Hot tier custa mais por GB e menos para acessar; archive faz o inverso. Intelligent-Tiering cobra monitoramento por objeto elegível.",
+          "practices": "Analytics/inventory, lifecycle testado, abort multipart uploads, gp3 em vez de gp2 quando adequado e excluir snapshots órfãos.",
+          "traps": "Glacier para leitura imediata frequente; Intelligent-Tiering para objetos minúsculos de vida curta; esquecer taxa de retrieval.",
+          "links": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html", "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"]
+        },
+        {
+          "title": "Custo de bancos de dados",
+          "technical": "Right-sizing, instâncias reservadas, Aurora Serverless v2, DynamoDB on-demand/provisioned+auto scaling e a classe DynamoDB Standard-IA para tabelas pouco acessadas ajustam custo ao padrão de carga; políticas de backup e retenção são tratadas separadamente.",
+          "child": "Não alugue um salão gigante para duas pessoas; use uma sala que cresce quando os convidados chegam.",
+          "when": "Cargas variáveis, ambientes sazonais, base previsível e bancos superdimensionados.",
+          "limits": "Serverless não zera necessariamente; mínimo de capacidade existe. Reserva reduz flexibilidade. I/O e storage podem dominar compute.",
+          "cost": "Medir CPU, memória, conexões, IOPS e requests; não otimizar apenas o tamanho da instância.",
+          "practices": "Performance Insights, auto scaling, pausa/desligamento quando suportado, retenção de backup consciente e proxy apenas se necessário.",
+          "traps": "Read replica para economizar; provisioned DynamoDB sem auto scaling para tráfego imprevisível; ignorar custo de I/O Aurora.",
+          "links": ["https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html", "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-cost-optimization.html"]
+        },
+        {
+          "title": "Transferência, NAT Gateway e topologia de rede",
+          "technical": "Transferência cross-AZ/Region, processamento por NAT/TGW e egress à internet acumulam custo. Public NAT zonal compartilhado pode criar tráfego cross-AZ; Regional NAT mantém afinidade zonal automaticamente. Gateway endpoints evitam NAT para S3/DynamoDB; CloudFront pode reduzir egress do origin.",
+          "child": "Cada pedágio parece pequeno, mas passar por três pontes para entregar a caixa ao vizinho deixa a viagem cara.",
+          "when": "Arquiteturas com alto volume, muitos serviços privados, tráfego entre AZs ou distribuição global.",
+          "limits": "Centralizar um NAT zonal/TGW pode economizar recursos e aumentar processamento/cross-AZ; Regional NAT simplifica HA, mas continua cobrando processamento e não substitui private NAT. Endpoint por AZ também tem custo. Otimize após medir.",
+          "cost": "NAT/TGW/interface endpoint têm hora e/ou GB; gateway endpoint não tem tarifa; egress e cross-AZ variam por serviço/região.",
+          "practices": "Cost and Usage Report, flow logs, endpoints corretos, manter tráfego local à AZ quando seguro e cache na borda.",
+          "traps": "NAT zonal único cross-AZ como 'mais barato' sem contar dados e resiliência; ignorar Regional NAT como alternativa atual; interface endpoint para S3 quando gateway atende; ignorar retorno assimétrico.",
+          "links": ["https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html", "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html", "https://aws.amazon.com/ec2/pricing/on-demand/#Data_Transfer"]
+        },
+        {
+          "title": "Governança financeira e Well-Architected",
+          "technical": "Tags/cost allocation, Cost Explorer, Budgets, Cost Anomaly Detection, CUR e Cost Optimization Hub tornam gasto atribuível. O pilar Cost Optimization trata prática de gestão, demanda, oferta e evolução.",
+          "child": "Coloque etiquetas em cada brinquedo, defina um cofrinho e peça um alarme quando alguém gastar rápido demais.",
+          "when": "Showback/chargeback, alertas, detecção de anomalia, priorização de savings e revisão contínua.",
+          "limits": "Budget alerta, mas não bloqueia por padrão. Tags precisam ser ativadas e não retroagem totalmente. Recomendações exigem contexto de negócio.",
+          "cost": "Ferramentas básicas têm recursos gratuitos; CUR gera storage/query e ações automatizadas podem afetar disponibilidade.",
+          "practices": "Owner/cost-center obrigatórios, orçamento por conta, revisão semanal, KPIs unitários e Well-Architected Review trimestral.",
+          "traps": "Tratar Budget como limite rígido; desligar recurso crítico só por baixa CPU; otimizar custo antes de requisitos de segurança/RTO.",
+          "links": ["https://docs.aws.amazon.com/cost-management/latest/userguide/what-is-costmanagement.html", "https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/welcome.html"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "id": "QUIZ-D1-08",
+  "titulo": "Mini-quiz 08 — Domínio 1 — Projetar arquiteturas seguras",
+  "tipo": "mini-quiz por domínio",
+  "versao_exame": "AWS Certified Solutions Architect – Associate (SAA-C03)",
+  "autoria": "Conteúdo original deste projeto; não reproduz questões reais nem dumps.",
+  "instrucoes": [
+    "Marque uma única alternativa (A, B, C ou D) por questão.",
+    "Faça a primeira tentativa sem consultar o gabarito.",
+    "Depois, leia a explicação de todas as alternativas e execute o exercício recomendado nos erros."
+  ],
+  "quantidade_questoes": 5,
+  "tempo_total_sugerido_minutos": 10,
+  "pontos_totais": 9,
+  "distribuicao_dominios": {
+    "D1": 5
+  },
+  "distribuicao_dificuldade": {
+    "difícil": 1,
+    "fácil": 2,
+    "média": 2
+  },
+  "distribuicao_gabarito": {
+    "A": 2,
+    "B": 1,
+    "C": 1,
+    "D": 1
+  },
+  "questoes": [
+    {
+      "id": "QUIZ-D1-08-Q01",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 1 — Projetar arquiteturas seguras",
+      "codigo_dominio": "D1",
+      "topico": "Permissions boundaries e delegação",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "A proptech janela está migrando uma carga crítica para a AWS. A solução atual funciona, mas não atende ao novo requisito não funcional. Uma plataforma permite que times de produto criem suas próprias roles, mas segurança precisa garantir que nenhuma role criada ultrapasse um conjunto máximo de ações. Os times ainda devem escolher permissões dentro desse limite. Qual recurso usar? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Exigir uma permissions boundary nas roles criadas e controlar iam:PermissionsBoundary nas políticas do time.",
+        "B": "Criar somente tags sem nenhuma condição de IAM associada.",
+        "C": "Anexar AdministratorAccess e pedir que cada time não use ações perigosas.",
+        "D": "Usar uma NACL para limitar quais APIs IAM podem ser chamadas."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "A permissions boundary define o máximo que uma policy de identidade pode conceder, permitindo delegação sem entregar privilégios ilimitados.\n\nTrade-off: Boundary não concede acesso por si só e precisa ser avaliada junto de policies de identidade, recurso, SCPs e negações explícitas. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "A criança escolhe onde brincar no quintal, mas a cerca define até onde ela pode ir.",
+      "feedback_acerto": "Acertou: A permissions boundary define o máximo que uma policy de identidade pode conceder, permitindo delegação sem entregar privilégios ilimitados. Quando outra opção poderia valer: Boundary não concede acesso por si só e precisa ser avaliada junto de policies de identidade, recurso, SCPs e negações explícitas. Mnemônica: associe “Permissions boundaries e delegação” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — A permissions boundary define o máximo que uma policy de identidade pode conceder, permitindo delegação sem entregar privilégios ilimitados.",
+        "B": "Incorreta — Tags isoladas são metadados; o controle exige policies que as avaliem.",
+        "C": "Incorreta — Confiança processual não impõe um limite técnico e AdministratorAccess viola privilégio mínimo.",
+        "D": "Incorreta — NACLs filtram pacotes e não avaliam ações IAM."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html",
+      "referencia_lab": "../labs/README.md — IAM least privilege e roles",
+      "exercicio_recomendado": "No lab IAM least privilege e roles, monte uma prova de conceito de Permissions boundaries e delegação; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D1-08-Q02",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 1 — Projetar arquiteturas seguras",
+      "codigo_dominio": "D1",
+      "topico": "Acesso entre contas com IAM Roles",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "O marketplace beija-flor deve manter a solução simples para a equipe de plantão. A aplicação é global e a latência percebida pelo usuário é uma métrica de negócio. Uma aplicação na conta de produção precisa ler objetos de um bucket pertencente à conta de dados, sem armazenar chaves de acesso. O acesso deve ser temporário, auditável e seguir privilégio mínimo. Qual solução atende melhor? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Tornar o bucket público e restringir o endereço IP na aplicação.",
+        "B": "Criar uma IAM Role na conta de dados, confiar na role da aplicação e usar AWS STS AssumeRole com política limitada ao bucket.",
+        "C": "Compartilhar a senha do usuário raiz da conta de dados pelo Secrets Manager.",
+        "D": "Criar um usuário IAM na conta de dados e copiar access key e secret key para a instância."
+      },
+      "resposta_correta": "B",
+      "explicacao_tecnica": "AssumeRole entrega credenciais temporárias e separa a política de confiança da política de permissões, permitindo acesso entre contas sem segredo de longa duração.\n\nTrade-off: Uma bucket policy também participa do controle de acesso, mas a role com STS é a opção central quando a aplicação precisa de uma identidade temporária na outra conta. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "É como dar um crachá de visitante que abre só uma sala e expira no fim da visita.",
+      "feedback_acerto": "Acertou: AssumeRole entrega credenciais temporárias e separa a política de confiança da política de permissões, permitindo acesso entre contas sem segredo de longa duração. Quando outra opção poderia valer: Uma bucket policy também participa do controle de acesso, mas a role com STS é a opção central quando a aplicação precisa de uma identidade temporária na outra conta. Mnemônica: associe “Acesso entre contas com IAM Roles” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é B. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Exposição pública viola o requisito e endereço IP não substitui autenticação e autorização.",
+        "B": "Correta — AssumeRole entrega credenciais temporárias e separa a política de confiança da política de permissões, permitindo acesso entre contas sem segredo de longa duração.",
+        "C": "Incorreta — Credenciais do usuário raiz não devem ser usadas por aplicações, mesmo quando armazenadas em um cofre.",
+        "D": "Incorreta — Chaves de longa duração aumentam o risco de vazamento e exigem rotação; não são necessárias para workloads na AWS."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html",
+      "referencia_lab": "../labs/README.md — Lambda/API Gateway com IAM e acesso entre contas",
+      "exercicio_recomendado": "No lab Lambda/API Gateway com IAM e acesso entre contas, monte uma prova de conceito de Acesso entre contas com IAM Roles; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D1-08-Q03",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 1 — Projetar arquiteturas seguras",
+      "codigo_dominio": "D1",
+      "topico": "S3 privado atrás do CloudFront",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "O banco digital pioneiro recebe picos imprevisíveis sem poder degradar o SLA. A solução atual funciona, mas não atende ao novo requisito não funcional. Um site estático precisa ser distribuído globalmente. Os objetos do S3 não podem ser acessados diretamente pela internet, e a equipe quer aplicar regras contra requisições maliciosas na borda. O que deve ser configurado? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Habilitar website hosting público no S3 e filtrar acessos apenas com security groups.",
+        "B": "Colocar o bucket em uma subnet privada e anexar uma network ACL.",
+        "C": "CloudFront com Origin Access Control para o bucket privado, bucket policy restrita à distribuição e AWS WAF associado ao CloudFront.",
+        "D": "Usar somente uma URL pré-assinada permanente para cada objeto."
+      },
+      "resposta_correta": "C",
+      "explicacao_tecnica": "O OAC permite que somente a distribuição autorizada leia o bucket, enquanto o WAF inspeciona requisições HTTP(S) antes de elas alcançarem a origem.\n\nTrade-off: Shield Standard já protege contra ataques DDoS comuns, mas WAF é o controle apropriado para padrões de camada 7 e o OAC evita bypass da distribuição. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "O depósito fica trancado; um entregador com crachá busca os pacotes, e um porteiro barra visitantes perigosos.",
+      "feedback_acerto": "Acertou: O OAC permite que somente a distribuição autorizada leia o bucket, enquanto o WAF inspeciona requisições HTTP(S) antes de elas alcançarem a origem. Quando outra opção poderia valer: Shield Standard já protege contra ataques DDoS comuns, mas WAF é o controle apropriado para padrões de camada 7 e o OAC evita bypass da distribuição. Mnemônica: associe “S3 privado atrás do CloudFront” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é C. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Buckets S3 não usam security groups, e o endpoint de website exigiria exposição pública da origem.",
+        "B": "Incorreta — S3 é um serviço regional, não um recurso implantado dentro de subnets do cliente.",
+        "C": "Correta — O OAC permite que somente a distribuição autorizada leia o bucket, enquanto o WAF inspeciona requisições HTTP(S) antes de elas alcançarem a origem.",
+        "D": "Incorreta — URLs pré-assinadas expiram e não substituem uma arquitetura de distribuição, cache e proteção de borda."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html",
+      "referencia_lab": "../labs/README.md — S3, CloudFront e WAF",
+      "exercicio_recomendado": "No lab S3, CloudFront e WAF, monte uma prova de conceito de S3 privado atrás do CloudFront; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D1-08-Q04",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 1 — Projetar arquiteturas seguras",
+      "codigo_dominio": "D1",
+      "topico": "Criptografia com AWS KMS",
+      "dificuldade": "difícil",
+      "tempo_sugerido_segundos": 130,
+      "pontos": 3,
+      "enunciado": "A universidade saber está migrando uma carga crítica para a AWS. A aplicação é global e a latência percebida pelo usuário é uma métrica de negócio. Um banco RDS deve ser criptografado em repouso com uma chave controlada pela empresa. A segurança exige separação de funções, auditoria de uso da chave e rotação anual automática. Qual desenho é apropriado? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.",
+      "alternativas": {
+        "A": "Habilitar apenas TLS no endpoint do RDS.",
+        "B": "Usar uma chave gerenciada pela AWS e editar diretamente sua key policy para impor a separação de funções.",
+        "C": "Guardar uma senha AES em user data e criptografar manualmente cada página do banco.",
+        "D": "Criar uma chave simétrica gerenciada pelo cliente no AWS KMS, limitar key policy/grants, habilitar rotação e selecioná-la ao criar o RDS."
+      },
+      "resposta_correta": "D",
+      "explicacao_tecnica": "Uma chave KMS gerenciada pelo cliente oferece controle de política, trilha de auditoria no CloudTrail e rotação automática compatível com a criptografia do RDS.\n\nTrade-off: A chave gerenciada pela AWS reduz administração, porém não dá o mesmo nível de controle de política exigido; a escolha da chave ocorre na criação ou restauração criptografada. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "É um cofre cuja chave mestra tem lista de convidados, diário de uso e troca automática de segredo.",
+      "feedback_acerto": "Acertou: Uma chave KMS gerenciada pelo cliente oferece controle de política, trilha de auditoria no CloudTrail e rotação automática compatível com a criptografia do RDS. Quando outra opção poderia valer: A chave gerenciada pela AWS reduz administração, porém não dá o mesmo nível de controle de política exigido; a escolha da chave ocorre na criação ou restauração criptografada. Mnemônica: associe “Criptografia com AWS KMS” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — TLS protege dados em trânsito; não satisfaz o requisito de criptografia em repouso.",
+        "B": "Incorreta — Key policies de chaves gerenciadas pela AWS não são editáveis pelo cliente como as de uma chave gerenciada pelo cliente.",
+        "C": "Incorreta — User data não é cofre de segredos e criptografia manual acrescenta risco e operação desnecessários.",
+        "D": "Correta — Uma chave KMS gerenciada pelo cliente oferece controle de política, trilha de auditoria no CloudTrail e rotação automática compatível com a criptografia do RDS."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html",
+      "referencia_lab": "../labs/README.md — KMS e criptografia em repouso",
+      "exercicio_recomendado": "No lab KMS e criptografia em repouso, monte uma prova de conceito de Criptografia com AWS KMS; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D1-08-Q05",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 1 — Projetar arquiteturas seguras",
+      "codigo_dominio": "D1",
+      "topico": "Rotação de credenciais com Secrets Manager",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "A proptech janela deve manter a solução simples para a equipe de plantão. A solução atual funciona, mas não atende ao novo requisito não funcional. Uma aplicação usa credenciais de um banco RDS. A senha precisa rotacionar automaticamente a cada 30 dias sem ser gravada no código ou na imagem do contêiner. Qual é a solução com menor esforço operacional? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Armazenar a credencial no AWS Secrets Manager, configurar rotação com Lambda e conceder à task role permissão de leitura do segredo.",
+        "B": "Guardar a senha em uma tag do recurso RDS protegida por IAM.",
+        "C": "Criar access keys para o usuário raiz e usá-las como senha do banco.",
+        "D": "Salvar a senha em uma variável de ambiente no Dockerfile e recriar a imagem mensalmente."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "Secrets Manager armazena, versiona e integra a rotação de segredos; a role do workload elimina credenciais AWS embutidas no contêiner.\n\nTrade-off: Parameter Store SecureString pode guardar valores sensíveis com KMS, mas a rotação gerenciada de credenciais de banco é a vantagem decisiva do Secrets Manager neste cenário. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "A senha mora num cofrinho que troca a combinação sozinho e só mostra a nova combinação ao robô autorizado.",
+      "feedback_acerto": "Acertou: Secrets Manager armazena, versiona e integra a rotação de segredos; a role do workload elimina credenciais AWS embutidas no contêiner. Quando outra opção poderia valer: Parameter Store SecureString pode guardar valores sensíveis com KMS, mas a rotação gerenciada de credenciais de banco é a vantagem decisiva do Secrets Manager neste cenário. Mnemônica: associe “Rotação de credenciais com Secrets Manager” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — Secrets Manager armazena, versiona e integra a rotação de segredos; a role do workload elimina credenciais AWS embutidas no contêiner.",
+        "B": "Incorreta — Tags não são um mecanismo de armazenamento seguro de segredos.",
+        "C": "Incorreta — Credenciais AWS não substituem credenciais do banco e o usuário raiz não deve ser usado por workloads.",
+        "D": "Incorreta — A imagem pode vazar a senha e a rotação permanece manual e acoplada ao deploy."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html",
+      "referencia_lab": "../labs/README.md — Lambda/API Gateway com IAM roles",
+      "exercicio_recomendado": "No lab Lambda/API Gateway com IAM roles, monte uma prova de conceito de Rotação de credenciais com Secrets Manager; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "id": "QUIZ-D2-03",
+  "titulo": "Mini-quiz 03 — Domínio 2 — Projetar arquiteturas resilientes",
+  "tipo": "mini-quiz por domínio",
+  "versao_exame": "AWS Certified Solutions Architect – Associate (SAA-C03)",
+  "autoria": "Conteúdo original deste projeto; não reproduz questões reais nem dumps.",
+  "instrucoes": [
+    "Marque uma única alternativa (A, B, C ou D) por questão.",
+    "Faça a primeira tentativa sem consultar o gabarito.",
+    "Depois, leia a explicação de todas as alternativas e execute o exercício recomendado nos erros."
+  ],
+  "quantidade_questoes": 5,
+  "tempo_total_sugerido_minutos": 10,
+  "pontos_totais": 9,
+  "distribuicao_dominios": {
+    "D2": 5
+  },
+  "distribuicao_dificuldade": {
+    "difícil": 1,
+    "fácil": 2,
+    "média": 2
+  },
+  "distribuicao_gabarito": {
+    "A": 2,
+    "B": 1,
+    "C": 1,
+    "D": 1
+  },
+  "questoes": [
+    {
+      "id": "QUIZ-D2-03-Q01",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Falhas assíncronas do Lambda",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "A edtech farol está preparando a arquitetura para a próxima campanha anual. A carga atende milhares de requisições por segundo em horários de pico. Uma função Lambda é invocada de modo assíncrono por eventos. Após as tentativas automáticas, eventos malsucedidos devem ser preservados para investigação e reprocessamento, sem bloquear eventos saudáveis. O que configurar? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Configurar uma on-failure destination para SQS/SNS/EventBridge ou uma DLQ compatível, além de alarmes e processamento idempotente.",
+        "B": "Reenviar o mesmo evento recursivamente dentro da função sem limite.",
+        "C": "Definir timeout infinito para garantir que toda execução termine.",
+        "D": "Desativar logs para impedir que falhas afetem o serviço."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "Invocações assíncronas possuem fila e retries gerenciados; destinations entregam contexto do resultado após as tentativas, permitindo análise e reprocessamento desacoplado.\n\nTrade-off: DLQ e destination têm formatos e capacidades diferentes; a equipe deve escolher um, observar idade máxima do evento e evitar loops de reprocessamento. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Cartinhas que o robô não consegue ler vão para uma caixa vermelha, sem parar a leitura das demais.",
+      "feedback_acerto": "Acertou: Invocações assíncronas possuem fila e retries gerenciados; destinations entregam contexto do resultado após as tentativas, permitindo análise e reprocessamento desacoplado. Quando outra opção poderia valer: DLQ e destination têm formatos e capacidades diferentes; a equipe deve escolher um, observar idade máxima do evento e evitar loops de reprocessamento. Mnemônica: associe “Falhas assíncronas do Lambda” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — Invocações assíncronas possuem fila e retries gerenciados; destinations entregam contexto do resultado após as tentativas, permitindo análise e reprocessamento desacoplado.",
+        "B": "Incorreta — Isso pode criar loop, duplicidade e custo sem isolar o evento defeituoso.",
+        "C": "Incorreta — Lambda tem limite de timeout e aumentar duração não resolve eventos permanentemente inválidos.",
+        "D": "Incorreta — Logs não causam a falha e removê-los prejudica diagnóstico e observabilidade."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/lambda/latest/dg/invocation-async-retain-records.html",
+      "referencia_lab": "../labs/README.md — Lambda, API Gateway e tratamento de erros",
+      "exercicio_recomendado": "No lab Lambda, API Gateway e tratamento de erros, monte uma prova de conceito de Falhas assíncronas do Lambda; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-03-Q02",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Políticas centralizadas com AWS Backup",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "A cooperativa campo vivo opera com uma equipe pequena e quer reduzir tarefas manuais. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Dezenas de contas precisam de backups consistentes de EBS, RDS e EFS, cópias entre regiões e proteção contra exclusão pela conta de origem. Segurança quer governança central. Qual abordagem usar? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Usar apenas RDS Multi-AZ como backup histórico.",
+        "B": "Usar AWS Backup com backup policies da organização, cofre central/cross-account, cópia cross-region e Vault Lock quando a imutabilidade for requerida.",
+        "C": "Copiar arquivos para o disco local de uma instância na mesma conta.",
+        "D": "Pedir que cada desenvolvedor crie snapshots manuais quando lembrar."
+      },
+      "resposta_correta": "B",
+      "explicacao_tecnica": "AWS Backup centraliza planos, seleção, retenção e cópias entre serviços e contas; Vault Lock ajuda a impor retenção WORM contra alterações indevidas.\n\nTrade-off: Backup só é confiável quando restaurações são testadas e métricas de RPO/RTO são verificadas; replicação e alta disponibilidade não substituem backups protegidos. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Um bibliotecário central faz cópias de todos os livros, guarda outra caixa em outra cidade e lacra as caixas pelo prazo certo.",
+      "feedback_acerto": "Acertou: AWS Backup centraliza planos, seleção, retenção e cópias entre serviços e contas; Vault Lock ajuda a impor retenção WORM contra alterações indevidas. Quando outra opção poderia valer: Backup só é confiável quando restaurações são testadas e métricas de RPO/RTO são verificadas; replicação e alta disponibilidade não substituem backups protegidos. Mnemônica: associe “Políticas centralizadas com AWS Backup” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é B. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Multi-AZ é alta disponibilidade e replica também erros lógicos; não é retenção histórica independente.",
+        "B": "Correta — AWS Backup centraliza planos, seleção, retenção e cópias entre serviços e contas; Vault Lock ajuda a impor retenção WORM contra alterações indevidas.",
+        "C": "Incorreta — A cópia permanece vulnerável a falhas e exclusões na mesma fronteira administrativa.",
+        "D": "Incorreta — O processo não é consistente, auditável nem centralmente imposto."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/aws-backup/latest/devguide/manage-cross-account.html",
+      "referencia_lab": "../labs/README.md — Backup, restore e testes de recuperação",
+      "exercicio_recomendado": "No lab Backup, restore e testes de recuperação, monte uma prova de conceito de Políticas centralizadas com AWS Backup; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-03-Q03",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "RDS Multi-AZ",
+      "dificuldade": "média",
+      "tempo_sugerido_segundos": 110,
+      "pontos": 2,
+      "enunciado": "A companhia aérea ventos está eliminando um ponto único de falha identificado em teste. A carga atende milhares de requisições por segundo em horários de pico. Um banco transacional RDS precisa recuperar automaticamente de falha de instância ou de AZ, preservando o mesmo endpoint. A carga de leitura não é o problema principal. Qual configuração atende ao requisito? Considere o principal trade-off operacional e escolha a melhor solução.",
+      "alternativas": {
+        "A": "Criar uma read replica na mesma AZ e usá-la como standby síncrono automático.",
+        "B": "Fazer snapshot manual uma vez por semana.",
+        "C": "Habilitar uma implantação RDS Multi-AZ com standby síncrono e failover gerenciado.",
+        "D": "Aumentar a classe da instância sem criar réplica."
+      },
+      "resposta_correta": "C",
+      "explicacao_tecnica": "RDS Multi-AZ replica de forma síncrona para outra AZ e executa failover do endpoint, sendo uma solução de alta disponibilidade e não de escalabilidade de leitura.\n\nTrade-off: Read replicas são assíncronas e adequadas para escalar leituras; podem ser promovidas, mas isso não equivale ao failover automático de Multi-AZ. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Há uma loja gêmea pronta em outro bairro; se a primeira fecha, a placa aponta sozinha para a segunda.",
+      "feedback_acerto": "Acertou: RDS Multi-AZ replica de forma síncrona para outra AZ e executa failover do endpoint, sendo uma solução de alta disponibilidade e não de escalabilidade de leitura. Quando outra opção poderia valer: Read replicas são assíncronas e adequadas para escalar leituras; podem ser promovidas, mas isso não equivale ao failover automático de Multi-AZ. Mnemônica: associe “RDS Multi-AZ” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é C. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — Read replicas usam replicação assíncrona e não fornecem o mesmo mecanismo de failover Multi-AZ.",
+        "B": "Incorreta — Snapshots ajudam em restauração, mas não fornecem failover rápido nem RPO próximo de zero.",
+        "C": "Correta — RDS Multi-AZ replica de forma síncrona para outra AZ e executa failover do endpoint, sendo uma solução de alta disponibilidade e não de escalabilidade de leitura.",
+        "D": "Incorreta — Uma instância maior continua sendo um ponto único de falha."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+      "referencia_lab": "../labs/README.md — RDS Multi-AZ e read replica",
+      "exercicio_recomendado": "No lab RDS Multi-AZ e read replica, monte uma prova de conceito de RDS Multi-AZ; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-03-Q04",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "ALB e Auto Scaling multi-AZ",
+      "dificuldade": "difícil",
+      "tempo_sugerido_segundos": 130,
+      "pontos": 3,
+      "enunciado": "A empresa de geoprocessamento mapa vivo está preparando a arquitetura para a próxima campanha anual. Uma interrupção de poucos minutos gera impacto financeiro mensurável. Uma aplicação HTTP stateless precisa continuar disponível quando uma instância ou uma AZ falhar e deve ajustar capacidade conforme o volume de requisições. Qual arquitetura escolher? Priorize simultaneamente o requisito explícito, o menor acoplamento operacional e o comportamento em falhas.",
+      "alternativas": {
+        "A": "Usar somente DNS round-robin com endereços fixos e sem Auto Scaling.",
+        "B": "Executar uma única instância grande e reiniciá-la com um cron job.",
+        "C": "Colocar duas instâncias na mesma AZ sem health check.",
+        "D": "ALB em pelo menos duas AZs, Auto Scaling group distribuído nessas AZs e target tracking baseado em uma métrica apropriada."
+      },
+      "resposta_correta": "D",
+      "explicacao_tecnica": "O ALB encaminha apenas para targets saudáveis e o Auto Scaling substitui capacidade e distribui instâncias entre AZs, eliminando pontos únicos no tier web.\n\nTrade-off: Sessões devem ficar fora das instâncias ou usar um armazenamento compartilhado; sticky sessions podem ajudar temporariamente, mas reduzem flexibilidade e não substituem estado externo. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "Vários caixas trabalham em lojas de bairros diferentes; um organizador manda clientes só aos caixas abertos e chama reforço quando a fila cresce.",
+      "feedback_acerto": "Acertou: O ALB encaminha apenas para targets saudáveis e o Auto Scaling substitui capacidade e distribui instâncias entre AZs, eliminando pontos únicos no tier web. Quando outra opção poderia valer: Sessões devem ficar fora das instâncias ou usar um armazenamento compartilhado; sticky sessions podem ajudar temporariamente, mas reduzem flexibilidade e não substituem estado externo. Mnemônica: associe “ALB e Auto Scaling multi-AZ” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é D. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Incorreta — DNS não substitui health checks do balanceador nem reposição e ajuste automático de capacidade.",
+        "B": "Incorreta — Ainda há ponto único de falha e recuperação dependente de automação frágil.",
+        "C": "Incorreta — Uma falha da AZ afeta ambas, e sem health check o tráfego pode chegar a targets defeituosos.",
+        "D": "Correta — O ALB encaminha apenas para targets saudáveis e o Auto Scaling substitui capacidade e distribui instâncias entre AZs, eliminando pontos únicos no tier web."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-availability-zone.html",
+      "referencia_lab": "../labs/README.md — ALB, Auto Scaling e health checks",
+      "exercicio_recomendado": "No lab ALB, Auto Scaling e health checks, monte uma prova de conceito de ALB e Auto Scaling multi-AZ; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    },
+    {
+      "id": "QUIZ-D2-03-Q05",
+      "tipo": "múltipla escolha — uma resposta",
+      "dominio": "Domínio 2 — Projetar arquiteturas resilientes",
+      "codigo_dominio": "D2",
+      "topico": "Route 53 failover",
+      "dificuldade": "fácil",
+      "tempo_sugerido_segundos": 90,
+      "pontos": 1,
+      "enunciado": "A edtech farol opera com uma equipe pequena e quer reduzir tarefas manuais. A carga atende milhares de requisições por segundo em horários de pico. Uma aplicação possui um endpoint primário em uma região e um site de recuperação em outra. O DNS deve enviar tráfego ao secundário apenas quando o primário não estiver saudável. Qual política usar? Escolha a alternativa que atende diretamente ao requisito.",
+      "alternativas": {
+        "A": "Criar registros Route 53 com failover routing, marcar primário/secundário e associar health check ao endpoint primário.",
+        "B": "Usar geolocation apenas, pois localização detecta falha automaticamente.",
+        "C": "Aumentar o TTL para 24 horas para acelerar a mudança.",
+        "D": "Usar simple routing com dois endereços e nenhum health check."
+      },
+      "resposta_correta": "A",
+      "explicacao_tecnica": "A política de failover usa a saúde do recurso para responder com o secundário quando o primário falha, implementando active-passive no DNS.\n\nTrade-off: TTL influencia quanto tempo resolvers mantêm respostas antigas; failover DNS não encerra conexões já abertas e deve ser combinado com um plano de dados consistente. A decisão deve ser confirmada com métricas, limites de serviço e um teste de falha controlado.",
+      "explicacao_crianca": "O mapa aponta para a loja principal; se a luz dela apaga, passa a apontar para a loja reserva.",
+      "feedback_acerto": "Acertou: A política de failover usa a saúde do recurso para responder com o secundário quando o primário falha, implementando active-passive no DNS. Quando outra opção poderia valer: TTL influencia quanto tempo resolvers mantêm respostas antigas; failover DNS não encerra conexões já abertas e deve ser combinado com um plano de dados consistente. Mnemônica: associe “Route 53 failover” ao requisito decisivo destacado no cenário.",
+      "feedback_erro": "A resposta correta é A. O erro típico aqui é escolher um serviço relacionado sem verificar o requisito decisivo. Compare estado, escopo, consistência, recuperação e custo operacional. Revise todas as justificativas A–D e execute o exercício indicado.",
+      "explicacao_alternativas": {
+        "A": "Correta — A política de failover usa a saúde do recurso para responder com o secundário quando o primário falha, implementando active-passive no DNS.",
+        "B": "Incorreta — Geolocation roteia pela origem do usuário; não é, por si só, política de recuperação por saúde.",
+        "C": "Incorreta — TTL alto faz caches manterem a resposta anterior por mais tempo, retardando a convergência.",
+        "D": "Incorreta — Simple routing não fornece o comportamento primário/secundário orientado por saúde."
+      },
+      "referencia_oficial": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html",
+      "referencia_lab": "../labs/README.md — Failover multi-região e Route 53",
+      "exercicio_recomendado": "No lab Failover multi-região e Route 53, monte uma prova de conceito de Route 53 failover; registre a métrica principal, provoque uma falha ou mudança de carga e explique por que uma alternativa incorreta não atende.",
+      "origem": "Cenário autoral criado para este projeto; não derivado de dumps de certificação."
+    }
+  ]
+}

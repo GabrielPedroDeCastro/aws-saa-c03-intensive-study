@@ -1,0 +1,8 @@
+flowchart LR
+  A["VPC A\n10.81.0.0/16"] --> Choice{"ConnectivityMode"}
+  Choice -->|"Peering: 1:1, barato"| PCX[VPC Peering]
+  Choice -->|"TGW: hub, pago"| TGW[Transit Gateway]
+  PCX --> B["VPC B\n10.82.0.0/16"]
+  TGW --> B
+  RTA["Route table A\n10.82/16"] -.-> Choice
+  RTB["Route table B\n10.81/16"] -.-> Choice

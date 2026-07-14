@@ -1,0 +1,41 @@
+{
+  "gerador": "tools/generate_assessments.py",
+  "conteudo_autoral": true,
+  "mini_quizzes": 40,
+  "questoes_mini_quizzes_unicas": 200,
+  "questoes_dia_01_networking": 10,
+  "diagnostico_questoes": 40,
+  "simulados_completos": 3,
+  "questoes_por_simulado": [
+    65,
+    65,
+    65
+  ],
+  "questoes_canonicas_totais_incluindo_dia_01": 445,
+  "flashcards": 240,
+  "gabarito_total": {
+    "A": 110,
+    "B": 111,
+    "C": 112,
+    "D": 112
+  },
+  "dificuldade_total": {
+    "difícil": 100,
+    "fácil": 133,
+    "média": 212
+  },
+  "dominios_total": {
+    "D1": 132,
+    "D2": 111,
+    "D3": 105,
+    "D4": 97
+  },
+  "validacoes": [
+    "JSON serializado em UTF-8 e relido pelo parser",
+    "IDs canônicos únicos",
+    "quatro alternativas A-D",
+    "resposta correta pertencente a A-D",
+    "explicação individual de A-D",
+    "todos os campos pedagógicos obrigatórios presentes"
+  ]
+}

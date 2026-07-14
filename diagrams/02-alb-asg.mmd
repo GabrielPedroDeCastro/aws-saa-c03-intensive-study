@@ -1,0 +1,10 @@
+flowchart TB
+  User((Cliente)) -->|HTTP 80| ALB[Application Load Balancer]
+  subgraph VPC["VPC 10.20.0.0/16"]
+    ALB --> TG["Target Group\nhealth /health"]
+    subgraph ASG["Auto Scaling Group 2–4"]
+      TG --> A["EC2 / NGINX\nAZ A"]
+      TG --> B["EC2 / NGINX\nAZ B"]
+    end
+    Policy["Target tracking\nCPU 60%"] -. ajusta .-> ASG
+  end
