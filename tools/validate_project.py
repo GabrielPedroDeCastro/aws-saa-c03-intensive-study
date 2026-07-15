@@ -220,7 +220,18 @@ def validate_support(validation: Validation) -> None:
         "tools/quiz_runner.py",
         "tools/grade_answers.py",
         "tools/test_assessment_lib.py",
+        "tools/test_site.py",
+        "site/index.template.html",
+        "site/styles.css",
+        "site/app.js",
+        "site/og.png",
+        "docs/assets/styles.css",
+        "docs/assets/app.js",
+        "docs/assets/og.png",
+        "docs/data/site-data.json",
+        "docs/.nojekyll",
         ".github/workflows/validate.yml",
+        ".github/workflows/pages.yml",
     ):
         validation.require((ROOT / path).exists(), f"Arquivo obrigatório ausente: {path}")
     sources = (ROOT / "references" / "SOURCES.md").read_text(encoding="utf-8") if (ROOT / "references" / "SOURCES.md").exists() else ""
@@ -251,6 +262,9 @@ def validate_internal_links(validation: Validation) -> None:
         if not source.is_file() or ".git" in source.parts or "tmp" in source.parts:
             continue
         if source.suffix.lower() not in {".md", ".html"}:
+            continue
+        if source.name.endswith(".template.html"):
+            # Template URLs are resolved relative to the generated docs/ output.
             continue
         text = source.read_text(encoding="utf-8")
         targets = markdown_pattern.findall(text) if source.suffix.lower() == ".md" else html_pattern.findall(text)

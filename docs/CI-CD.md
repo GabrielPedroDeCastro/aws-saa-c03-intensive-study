@@ -3,7 +3,7 @@
 O workflow de validação não faz deploy na AWS e não precisa de credenciais. Em push ou pull request ele:
 
 1. compila os scripts Python;
-2. reconstrói a landing page a partir de `content/topics.json` e detecta diferença;
+2. reconstrói o portal interativo a partir de `content/topics.json`, do quiz do Dia 1 e dos assets em `site/`;
 3. valida os contratos, contagens e JSON do projeto;
 4. roda `cfn-lint` nos templates CloudFormation;
 5. verifica `terraform fmt` e executa `terraform validate` com backend desabilitado em cada lab.
@@ -11,6 +11,12 @@ O workflow de validação não faz deploy na AWS e não precisa de credenciais. 
 As versões do Terraform e do `cfn-lint` estão fixadas no workflow; cada lab mantém `.terraform.lock.hcl` para selecionar a mesma versão do provider validada neste commit.
 
 Arquivo: [validate.yml](../.github/workflows/validate.yml).
+
+## Publicação do site
+
+O workflow [pages.yml](../.github/workflows/pages.yml) regenera e valida o portal, empacota somente `docs/` e publica no GitHub Pages após cada push em `main`. Ele usa permissões mínimas: leitura de conteúdo no build e `pages: write`/`id-token: write` apenas no job de deploy.
+
+Endereço: <https://gabrielpedrodecastro.github.io/aws-saa-c03-intensive-study/>
 
 ## Fluxo sugerido de contribuição
 

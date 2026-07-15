@@ -1,17 +1,139 @@
 #!/usr/bin/env python3
-"""Build the Markdown and self-contained HTML landing pages from structured topics."""
+"""Build the study guide and the static GitHub Pages learning portal."""
 
 from __future__ import annotations
 
-import html
 import json
+import shutil
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "content" / "topics.json"
+TOPICS_SOURCE = ROOT / "content" / "topics.json"
+QUIZ_SOURCE = ROOT / "quizzes" / "dia-01-10.json"
 MARKDOWN = ROOT / "GUIA-DE-ESTUDOS.md"
-HTML = ROOT / "docs" / "index.html"
+SITE_SOURCE = ROOT / "site"
+DOCS = ROOT / "docs"
+REPOSITORY_URL = "https://github.com/GabrielPedroDeCastro/aws-saa-c03-intensive-study"
+SITE_URL = "https://gabrielpedrodecastro.github.io/aws-saa-c03-intensive-study/"
+
+LABS = [
+    {
+        "id": "lab-01",
+        "number": "01",
+        "title": "VPC multi-AZ + NAT",
+        "domain": "D2",
+        "minutes": 90,
+        "cost": "Atenção",
+        "summary": "Subnets públicas e privadas em duas AZs, rotas, NAT zonal e endpoint S3.",
+        "diagram": "01-vpc-multi-az-nat.svg",
+        "path": "labs/01-vpc-multi-az-nat/README.md",
+    },
+    {
+        "id": "lab-02",
+        "number": "02",
+        "title": "ALB + Auto Scaling",
+        "domain": "D2",
+        "minutes": 75,
+        "cost": "Baixo",
+        "summary": "Aplicação stateless multi-AZ, health checks e target tracking.",
+        "diagram": "02-alb-asg.svg",
+        "path": "labs/02-alb-asg/README.md",
+    },
+    {
+        "id": "lab-03",
+        "number": "03",
+        "title": "S3 + CloudFront + WAF",
+        "domain": "D1",
+        "minutes": 75,
+        "cost": "Baixo",
+        "summary": "Origem privada com OAC, distribuição global e proteção de camada 7.",
+        "diagram": "03-s3-cloudfront-waf.svg",
+        "path": "labs/03-s3-cloudfront-waf/README.md",
+    },
+    {
+        "id": "lab-04",
+        "number": "04",
+        "title": "RDS Multi-AZ + réplica",
+        "domain": "D2",
+        "minutes": 90,
+        "cost": "Atenção",
+        "summary": "Alta disponibilidade, failover gerenciado e escala de leitura opcional.",
+        "diagram": "04-rds-multi-az-replica.svg",
+        "path": "labs/04-rds-multi-az-replica/README.md",
+    },
+    {
+        "id": "lab-05",
+        "number": "05",
+        "title": "DynamoDB + DAX",
+        "domain": "D3",
+        "minutes": 75,
+        "cost": "Opcional",
+        "summary": "Modelagem de chaves, on-demand e cache DAX opt-in para comparar trade-offs.",
+        "diagram": "05-dynamodb-dax.svg",
+        "path": "labs/05-dynamodb-dax/README.md",
+    },
+    {
+        "id": "lab-06",
+        "number": "06",
+        "title": "Lambda + API Gateway + IAM",
+        "domain": "D1",
+        "minutes": 70,
+        "cost": "Muito baixo",
+        "summary": "API serverless com permissões mínimas, logs e integração proxy.",
+        "diagram": "06-lambda-api-gateway-iam.svg",
+        "path": "labs/06-lambda-api-gateway-iam/README.md",
+    },
+    {
+        "id": "lab-07",
+        "number": "07",
+        "title": "KMS e criptografia",
+        "domain": "D1",
+        "minutes": 60,
+        "cost": "Baixo",
+        "summary": "Envelope encryption, key policy, rotação e trilha de auditoria.",
+        "diagram": "07-kms-encryption-at-rest.svg",
+        "path": "labs/07-kms-encryption-at-rest/README.md",
+    },
+    {
+        "id": "lab-08",
+        "number": "08",
+        "title": "Transit Gateway ou Peering",
+        "domain": "D2",
+        "minutes": 85,
+        "cost": "Opt-in",
+        "summary": "Conectividade entre VPCs e decisão por escala, transitividade e custo.",
+        "diagram": "08-transit-gateway-peering.svg",
+        "path": "labs/08-transit-gateway-peering/README.md",
+    },
+]
+
+PLANS = [
+    {
+        "id": "4-semanas",
+        "title": "4 semanas",
+        "label": "Recomendado",
+        "pace": "2–3 h por dia",
+        "description": "Cobertura progressiva, oito labs, revisão espaçada e três simulados.",
+        "days": 28,
+    },
+    {
+        "id": "2-semanas",
+        "title": "2 semanas",
+        "label": "Intensivo",
+        "pace": "4–6 h por dia",
+        "description": "Mesma cobertura com blocos combinados de teoria, prática e correção.",
+        "days": 14,
+    },
+    {
+        "id": "bootcamp",
+        "title": "3 fins de semana",
+        "label": "Compacto",
+        "pace": "Sábado + domingo",
+        "description": "Seis dias longos para quem já trabalha com AWS e quer consolidar decisões.",
+        "days": 6,
+    },
+]
 
 
 def md_escape(value: str) -> str:
@@ -37,14 +159,14 @@ def build_markdown(data: dict) -> str:
     lines.extend(
         [
             "",
-            "> Regra de prova: sublinhe requisito, restrição e palavra de decisão (mais resiliente, menor custo, menor esforço operacional ou maior desempenho). Elimine respostas tecnicamente possíveis que não otimizam o requisito pedido.",
+            "> Regra de prova: sublinhe requisito, restrição e palavra de decisão. Elimine respostas tecnicamente possíveis que não otimizam o requisito pedido.",
             "",
         ]
     )
     for domain in data["domains"]:
         lines.extend(
             [
-                f"<a id=\"{domain['id'].lower()}\"></a>",
+                f'<a id="{domain["id"].lower()}"></a>',
                 f"## {domain['id']} - {domain['title']} ({domain['weight']}%)",
                 "",
                 domain["objective"],
@@ -85,72 +207,63 @@ def build_markdown(data: dict) -> str:
             "4. Resolva cinco questões e registre por que descartou cada distrator.",
             "5. Execute o lab relacionado e comprove os checkpoints antes do cleanup.",
             "",
-            "Volte ao [README](README.md), escolha um [cronograma](schedules/README.md) ou abra a [landing page HTML](docs/index.html).",
+            f"Abra o [site de estudo]({SITE_URL}) ou volte ao [README](README.md).",
             "",
         ]
     )
     return "\n".join(lines)
 
 
-def build_html(data: dict) -> str:
-    nav = "".join(
-        f'<a href="#{d["id"].lower()}">{html.escape(d["id"])} · {d["weight"]}%</a>'
-        for d in data["domains"]
-    )
-    sections = []
-    for domain in data["domains"]:
-        cards = []
-        for topic in domain["topics"]:
-            links = " · ".join(
-                f'<a href="{html.escape(url)}" target="_blank" rel="noreferrer">AWS {i + 1}</a>'
-                for i, url in enumerate(topic["links"])
-            )
-            cards.append(
-                f'''<article class="card">
-<h3>{html.escape(topic['title'])}</h3>
-<p><b>Técnico.</b> {html.escape(topic['technical'])}</p>
-<p class="kid"><b>🧒 Como criança.</b> {html.escape(topic['child'])}</p>
-<dl>
-<dt>Quando usar</dt><dd>{html.escape(topic['when'])}</dd>
-<dt>Limitações</dt><dd>{html.escape(topic['limits'])}</dd>
-<dt>Custo estimado</dt><dd>{html.escape(topic['cost'])}</dd>
-<dt>Melhores práticas</dt><dd>{html.escape(topic['practices'])}</dd>
-<dt>Pegadinhas</dt><dd>{html.escape(topic['traps'])}</dd>
-</dl><p class="links">{links}</p></article>'''
-            )
-        sections.append(
-            f'''<section id="{domain['id'].lower()}">
-<header><span>{html.escape(domain['id'])}</span><h2>{html.escape(domain['title'])}</h2><strong>{domain['weight']}%</strong></header>
-<p class="objective">{html.escape(domain['objective'])}</p>
-<div class="grid">{"".join(cards)}</div></section>'''
-        )
-    return f'''<!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Guia intensivo AWS SAA-C03</title>
-<style>
-:root{{--ink:#172033;--muted:#536078;--bg:#f5f7fb;--card:#fff;--aws:#ff9900;--blue:#146eb4;--line:#dfe5ef;--kid:#fff6de}}
-*{{box-sizing:border-box}}html{{scroll-behavior:smooth}}body{{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,sans-serif}}
-.hero{{padding:4.5rem max(6vw,1rem);background:linear-gradient(135deg,#101827,#243b64);color:white}}.eyebrow{{color:#ffc65c;text-transform:uppercase;letter-spacing:.12em;font-weight:800}}
-h1{{font-size:clamp(2.2rem,6vw,4.7rem);line-height:1.02;max-width:900px;margin:.3rem 0 1rem}}.hero p{{max-width:760px;color:#dce6f7;font-size:1.15rem}}
-nav{{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.6rem}}nav a{{color:white;text-decoration:none;border:1px solid #ffffff55;border-radius:999px;padding:.5rem .9rem}}nav a:hover{{background:#ffffff18}}
-main{{width:min(1200px,94vw);margin:auto}}section{{padding:4rem 0 1rem;scroll-margin-top:1rem}}section>header{{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1rem}}
-section>header span{{background:var(--aws);font-weight:900;border-radius:.6rem;padding:.45rem .7rem}}h2{{font-size:clamp(1.6rem,3vw,2.6rem);margin:0}}section>header strong{{font-size:1.4rem;color:var(--blue)}}.objective{{color:var(--muted);max-width:800px}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1rem}}.card{{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.25rem;box-shadow:0 5px 20px #20304a0b}}h3{{margin-top:0;line-height:1.25}}.kid{{background:var(--kid);padding:.75rem;border-radius:.7rem}}
-dl{{display:grid;grid-template-columns:8.2rem 1fr;gap:.45rem .7rem;margin-bottom:.8rem}}dt{{font-weight:800}}dd{{margin:0;color:var(--muted)}}a{{color:#075b9b}}.links{{margin-bottom:0}}footer{{padding:4rem max(3vw,1rem);text-align:center;color:var(--muted)}}
-@media(max-width:560px){{dl{{grid-template-columns:1fr}}section>header{{grid-template-columns:auto 1fr}}section>header strong{{grid-column:2}}}}
-</style></head><body>
-<header class="hero"><div class="eyebrow">Projeto hands-on · SAA-C03</div><h1>Aprenda a decidir como arquiteto.</h1>
-<p>Quatro domínios, duas camadas de explicação e um foco: transformar requisitos, restrições, custo e falhas em escolhas arquiteturais defensáveis.</p><nav>{nav}</nav></header>
-<main>{''.join(sections)}</main><footer>Conteúdo verificado em {html.escape(data['version_checked'])}. Preços são relativos; confirme no AWS Pricing Calculator. <a href="../README.md">Abrir README</a>.</footer>
-</body></html>'''
+def build_site_payload(topics: dict, quiz: dict) -> dict:
+    return {
+        "topics": topics,
+        "quiz": quiz,
+        "labs": [{**lab, "url": f"{REPOSITORY_URL}/blob/main/{lab['path']}"} for lab in LABS],
+        "plans": PLANS,
+        "repositoryUrl": REPOSITORY_URL,
+        "siteUrl": SITE_URL,
+        "stats": {
+            "domains": 4,
+            "topics": sum(len(domain["topics"]) for domain in topics["domains"]),
+            "labs": len(LABS),
+            "questions": 445,
+            "flashcards": 240,
+            "mockExams": 3,
+        },
+    }
+
+
+def copy_site_assets() -> None:
+    assets = DOCS / "assets"
+    diagrams = DOCS / "diagrams"
+    data_dir = DOCS / "data"
+    assets.mkdir(parents=True, exist_ok=True)
+    diagrams.mkdir(parents=True, exist_ok=True)
+    data_dir.mkdir(parents=True, exist_ok=True)
+    for filename in ("styles.css", "app.js", "og.png"):
+        shutil.copyfile(SITE_SOURCE / filename, assets / filename)
+    for lab in LABS:
+        shutil.copyfile(ROOT / "diagrams" / lab["diagram"], diagrams / lab["diagram"])
+    (DOCS / ".nojekyll").write_text("", encoding="utf-8")
 
 
 def main() -> None:
-    data = json.loads(SOURCE.read_text(encoding="utf-8"))
-    MARKDOWN.write_text(build_markdown(data), encoding="utf-8")
-    HTML.write_text(build_html(data), encoding="utf-8")
-    topic_count = sum(len(domain["topics"]) for domain in data["domains"])
-    print(f"Generated {MARKDOWN.name} and {HTML.relative_to(ROOT)} from {topic_count} topics.")
+    topics = json.loads(TOPICS_SOURCE.read_text(encoding="utf-8"))
+    quiz = json.loads(QUIZ_SOURCE.read_text(encoding="utf-8"))
+    payload = build_site_payload(topics, quiz)
+    payload_json = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    template = (SITE_SOURCE / "index.template.html").read_text(encoding="utf-8")
+    index = template.replace("__SITE_DATA__", payload_json)
+
+    DOCS.mkdir(parents=True, exist_ok=True)
+    copy_site_assets()
+    MARKDOWN.write_text(build_markdown(topics), encoding="utf-8")
+    (DOCS / "index.html").write_text(index, encoding="utf-8")
+    (DOCS / "data" / "site-data.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    topic_count = payload["stats"]["topics"]
+    print(f"Generated study guide and GitHub Pages portal from {topic_count} topics and {len(LABS)} labs.")
 
 
 if __name__ == "__main__":
