@@ -31,11 +31,13 @@ jobs:
         run: |
           python -m compileall -q tools
           python tools/test_assessment_lib.py
+          python tools/test_site.py
 
-      - name: Rebuild landing page
+      - name: Rebuild and check study site
         run: |
           python tools/build_site.py
-          git diff --exit-code -- GUIA-DE-ESTUDOS.md docs/index.html
+          node --check docs/assets/app.js
+          git diff --exit-code -- GUIA-DE-ESTUDOS.md docs
 
       - name: Rebuild assessments
         run: |

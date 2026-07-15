@@ -11,7 +11,7 @@ Verificado em **2026-07-14**. As faixas são didáticas e relativas. O total dep
 | [D3 - Projetar arquiteturas de alto desempenho](#d3) | 24% | Selecionar compute, armazenamento, banco, rede e ingestão compatíveis com o padrão real de acesso. |
 | [D4 - Projetar arquiteturas otimizadas para custos](#d4) | 20% | Atender requisitos pelo menor custo total, eliminando desperdício sem sacrificar segurança ou resiliência necessárias. |
 
-> Regra de prova: sublinhe requisito, restrição e palavra de decisão (mais resiliente, menor custo, menor esforço operacional ou maior desempenho). Elimine respostas tecnicamente possíveis que não otimizam o requisito pedido.
+> Regra de prova: sublinhe requisito, restrição e palavra de decisão. Elimine respostas tecnicamente possíveis que não otimizam o requisito pedido.
 
 <a id="d1"></a>
 ## D1 - Projetar arquiteturas seguras (30%)
@@ -401,4 +401,4 @@ Atender requisitos pelo menor custo total, eliminando desperdício sem sacrifica
 4. Resolva cinco questões e registre por que descartou cada distrator.
 5. Execute o lab relacionado e comprove os checkpoints antes do cleanup.
 
-Volte ao [README](README.md), escolha um [cronograma](schedules/README.md) ou abra a [landing page HTML](docs/index.html).
+Abra o [site de estudo](https://gabrielpedrodecastro.github.io/aws-saa-c03-intensive-study/) ou volte ao [README](README.md).

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08111f">
+  <meta name="description" content="Portal prático e intensivo para a certificação AWS Solutions Architect Associate SAA-C03.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AWS SAA-C03 · Arquitetura na prática">
+  <meta property="og:description" content="Guia, 8 labs, 445 questões, simulados e um plano mensurável de estudo.">
+  <meta property="og:url" content="https://gabrielpedrodecastro.github.io/aws-saa-c03-intensive-study/">
+  <meta property="og:image" content="https://gabrielpedrodecastro.github.io/aws-saa-c03-intensive-study/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://gabrielpedrodecastro.github.io/aws-saa-c03-intensive-study/">
+  <link rel="stylesheet" href="assets/styles.css">
+  <title>AWS SAA-C03 · Arquitetura na prática</title>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topbar" data-topbar>
+    <a class="brand" href="#inicio" aria-label="Início do portal SAA-C03">
+      <span class="brand-mark" aria-hidden="true">A</span>
+      <span><strong>SAA-C03</strong><small>Arquitetura na prática</small></span>
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" data-menu-toggle>
+      <span aria-hidden="true">☰</span><span class="sr-only">Abrir menu</span>
+    </button>
+    <nav id="main-nav" class="main-nav" aria-label="Navegação principal" data-menu>
+      <a href="#guia">Guia</a>
+      <a href="#laboratorios">Labs</a>
+      <a href="#praticar">Praticar</a>
+      <a href="#plano">Plano</a>
+      <a href="#recursos">Recursos</a>
+    </nav>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Alternar tema">☾</button>
+  </header>
+
+  <main id="conteudo">
+    <section id="inicio" class="hero section-shell">
+      <div class="hero-copy">
+        <p class="eyebrow">Projeto aberto · hands-on · SAA-C03</p>
+        <h1>Não decore serviços.<br><span>Aprenda a decidir.</span></h1>
+        <p class="hero-lead">Um sistema completo de estudo para transformar requisitos, falhas, desempenho, segurança e custo em decisões arquiteturais defensáveis.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#praticar">Começar quiz do Dia 1</a>
+          <a class="button button-secondary" href="#plano">Escolher meu ritmo</a>
+        </div>
+        <p class="hero-note"><span aria-hidden="true">●</span> Conteúdo autoral, alinhado ao blueprint oficial e sem dumps.</p>
+      </div>
+      <aside class="decision-card" aria-label="Método de decisão arquitetural">
+        <p class="card-kicker">A pergunta certa</p>
+        <ol class="decision-flow">
+          <li><span>01</span><div><strong>Requisito</strong><small>O que precisa acontecer?</small></div></li>
+          <li><span>02</span><div><strong>Restrição</strong><small>O que não pode acontecer?</small></div></li>
+          <li><span>03</span><div><strong>Trade-off</strong><small>O que estamos aceitando?</small></div></li>
+          <li><span>04</span><div><strong>Evidência</strong><small>Como vamos comprovar?</small></div></li>
+        </ol>
+      </aside>
+    </section>
+
+    <section class="stats-strip" aria-label="Números do projeto" data-stats></section>
+
+    <section id="guia" class="content-section section-shell">
+      <div class="section-heading">
+        <div><p class="eyebrow">01 · Mapa do exame</p><h2>Quatro domínios, uma linha de raciocínio</h2></div>
+        <p>Busque um serviço ou uma palavra-chave e compare as decisões sem perder o peso oficial de cada domínio.</p>
+      </div>
+      <div class="guide-toolbar" role="search">
+        <label class="search-field"><span class="sr-only">Buscar tópicos</span><span aria-hidden="true">⌕</span><input type="search" placeholder="Buscar: Multi-AZ, KMS, S3, custo…" data-topic-search></label>
+        <div class="filter-group" aria-label="Filtrar por domínio" data-domain-filters></div>
+      </div>
+      <div class="domain-overview" data-domain-overview></div>
+      <div class="topic-grid" data-topic-grid></div>
+      <p class="empty-state" hidden data-topic-empty>Nenhum tópico combina com essa busca.</p>
+    </section>
+
+    <section id="laboratorios" class="content-section labs-section">
+      <div class="section-shell">
+        <div class="section-heading inverse">
+          <div><p class="eyebrow">02 · Aprender fazendo</p><h2>Oito arquiteturas para montar, quebrar e explicar</h2></div>
+          <p>Cada lab oferece Console, CLI, CloudFormation e Terraform, com estimativa de custo, checkpoints e cleanup.</p>
+        </div>
+        <div class="lab-progress" aria-live="polite"><span data-lab-progress-label>0 de 8 concluídos</span><div class="progress-track"><span data-lab-progress></span></div></div>
+        <div class="lab-grid" data-lab-grid></div>
+      </div>
+    </section>
+
+    <section id="praticar" class="content-section section-shell practice-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">03 · Recuperação ativa</p><h2>Decida antes de ler a explicação</h2></div>
+        <p>O quiz introdutório usa dez cenários de networking. O progresso fica somente neste navegador.</p>
+      </div>
+      <div class="practice-layout">
+        <aside class="practice-summary">
+          <p class="card-kicker">Dia 1 · Networking</p>
+          <strong class="practice-score" data-quiz-score>—</strong>
+          <span data-quiz-score-label>Pronto para começar</span>
+          <div class="question-dots" data-question-dots aria-label="Progresso das questões"></div>
+          <button class="text-button" type="button" data-quiz-reset>Reiniciar tentativa</button>
+        </aside>
+        <article class="quiz-card" data-quiz-card>
+          <div class="quiz-start" data-quiz-start>
+            <span class="quiz-badge">10 questões · ~20 minutos</span>
+            <h3>Fundamentos de VPC e networking</h3>
+            <p>Responda sem consulta. Depois de cada decisão, confronte a explicação técnica, a analogia e os distratores.</p>
+            <button class="button button-primary" type="button" data-quiz-begin>Iniciar agora</button>
+          </div>
+          <div class="quiz-question" hidden data-quiz-question></div>
+          <div class="quiz-result" hidden data-quiz-result></div>
+        </article>
+      </div>
+      <div class="assessment-cards">
+        <article><span>Diagnóstico</span><strong>40</strong><p>Questões para descobrir a prioridade inicial.</p></article>
+        <article><span>Mini-quizzes</span><strong>200</strong><p>Dez baterias curtas por domínio.</p></article>
+        <article><span>Simulados</span><strong>3 × 65</strong><p>Provas completas com distribuição oficial.</p></article>
+        <article><span>Flashcards</span><strong>240</strong><p>Decisões em duas camadas de explicação.</p></article>
+      </div>
+    </section>
+
+    <section id="plano" class="content-section plan-section">
+      <div class="section-shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">04 · Ritmo sustentável</p><h2>Escolha o plano que cabe na sua semana</h2></div>
+          <p>Troque de ritmo a qualquer momento. A trilha recomendada intercala conceito, prática, questões e revisão.</p>
+        </div>
+        <div class="plan-grid" data-plan-grid></div>
+        <div class="weekly-plan">
+          <div class="weekly-heading"><div><span>Trilha ativa</span><h3 data-active-plan-title>4 semanas</h3></div><strong data-plan-progress-label>0%</strong></div>
+          <div class="progress-track large"><span data-plan-progress></span></div>
+          <div class="day-grid" data-day-grid></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="recursos" class="content-section section-shell resources-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">05 · Projeto completo</p><h2>Do navegador para a arquitetura real</h2></div>
+        <p>Abra o código, rode as validações e use uma conta sandbox antes de implantar qualquer recurso com custo.</p>
+      </div>
+      <div class="resource-grid">
+        <a href="https://github.com/GabrielPedroDeCastro/aws-saa-c03-intensive-study" target="_blank" rel="noreferrer"><span>Repositório</span><strong>CloudFormation + Terraform</strong><small>Abrir no GitHub ↗</small></a>
+        <a href="https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html" target="_blank" rel="noreferrer"><span>Fonte de verdade</span><strong>Guia oficial SAA-C03</strong><small>Abrir documentação ↗</small></a>
+        <a href="https://aws.amazon.com/certification/certification-prep/" target="_blank" rel="noreferrer"><span>Preparação</span><strong>Recursos oficiais AWS</strong><small>Abrir portal AWS ↗</small></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div><strong>AWS SAA-C03 · Arquitetura na prática</strong><p>Material educacional independente, sem afiliação ou endosso da AWS.</p></div>
+    <a href="#inicio">Voltar ao topo ↑</a>
+  </footer>
+
+  <noscript><p class="noscript">Ative o JavaScript para usar busca, progresso e quiz. O guia textual continua disponível no repositório.</p></noscript>
+  <script id="site-data" type="application/json">__SITE_DATA__</script>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

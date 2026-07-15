@@ -2,11 +2,13 @@
 
 Este repositório é um programa completo de preparação para a certificação **AWS Certified Solutions Architect - Associate (SAA-C03)**. O caminho padrão dura 4 semanas; também há uma trilha intensiva de 2 semanas e um bootcamp de 3 fins de semana. Todo conceito aparece em duas camadas: explicação técnica e analogia "como criança".
 
+> **Site de estudo:** [abra o portal interativo no GitHub Pages](https://gabrielpedrodecastro.github.io/aws-saa-c03-intensive-study/) para navegar pelo guia, acompanhar os labs, responder ao quiz do Dia 1 e salvar seu progresso no navegador.
+
 > **Segurança de custo:** nenhum comando de implantação é executado automaticamente. Use uma conta sandbox, um perfil AWS separado, alertas de orçamento e faça o cleanup ao terminar cada lab. NAT Gateway, DAX, WAF, Transit Gateway, RDS e outros recursos podem gerar cobrança mesmo com pouco tráfego.
 
 ## Comece aqui
 
-1. Abra o [pacote inicial](PACOTE-INICIAL.md) para a orientação de entrega e o primeiro dia.
+1. Abra o [site interativo](https://gabrielpedrodecastro.github.io/aws-saa-c03-intensive-study/) ou o [pacote inicial](PACOTE-INICIAL.md).
 2. Leia o [guia por domínio](GUIA-DE-ESTUDOS.md).
 3. Escolha um [cronograma](schedules/README.md).
 4. Configure os [pré-requisitos e a conta sandbox](docs/SETUP.md).
@@ -51,7 +53,8 @@ Este repositório é um programa completo de preparação para a certificação 
 |-- references/    # fontes oficiais e avaliação de simulados externos
 |-- tools/         # correção, relatório, validação e geradores
 |-- scripts/       # utilitários de deploy/cleanup
-|-- docs/          # setup, CI/CD e landing page HTML
+|-- site/          # fontes do portal interativo
+|-- docs/          # site gerado para o GitHub Pages, setup e CI/CD
 `-- content/       # fonte estruturada do guia por domínio
 ```
 
